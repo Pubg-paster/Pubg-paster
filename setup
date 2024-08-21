@@ -9,7 +9,7 @@ echo "-----------------------"
 quickbms_dir=$PREFIX/share/quickbms
 
 function redirect {
- echo -e "${LIGHTGREEN}STARTING PUBG-PASTER"
+ echo -e "${LIGHTGREEN}STARTING Pubg-paster"
  echo -ne '#####                     (33%)\r'
  sleep 1
  echo -ne '#############             (66%)\r'
