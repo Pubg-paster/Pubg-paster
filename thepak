@@ -4,9 +4,8 @@
 PASSWORD="password"
 
 # Prompt for the password
-echo -n "Enter password: "
-read -s input_password
-echo
+read -p "Enter password: " input_password
+
 
 # Verify the password
 if [[ "$input_password" != "$PASSWORD" ]]; then
