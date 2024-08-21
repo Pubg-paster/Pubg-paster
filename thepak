@@ -18,7 +18,7 @@ fi
 source etc/banner
 
 # Display banner
-echo -e "executing: ${LIGHTGREEN} PUBG-PASTER"
+echo -e "executing: ${LIGHTGREEN} Pubg-paster"
 echo "-----------------------"
 
 # Check if the output directory exists, if not, create it
