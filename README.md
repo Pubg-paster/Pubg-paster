@@ -23,7 +23,6 @@ pkg install git
 5. 
 ```
 git clone https://github.com/Pubg-paster/Pubg-paster.git
-
 ```
 5. Open ThePAK directory and run setup.
 ```
