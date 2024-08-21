@@ -20,10 +20,10 @@ PAK_DIR="$OUTPUT_DIR/pak"
 
 # Create directories if they don't exist
 mkdir -p "$OUTPUT_DIR"
-mkdir -p "$PAK_DIR"
+mkdir -p "$INPUTpak_DIR"
 
 unpacking () {
-  if qemu-i386 $PREFIX/share/quickbms/quickbms -Q etc/tools.bms "$opt" "$PAK_DIR"; then
+  if qemu-i386 $PREFIX/share/quickbms/quickbms -Q etc/tools.bms "$opt" "$t /storage/emulated/0/Download/INPUTpak"; then
     echo "Unpacking completed successfully."
   else
     echo "Error during unpacking."
@@ -31,7 +31,7 @@ unpacking () {
 }
 
 repacking () {
-  if qemu-i386 $PREFIX/share/quickbms/quickbms -w -r -r etc/tools.bms "$opt" "$PAK_DIR"; then
+  if qemu-i386 $PREFIX/share/quickbms/quickbms -w -r -r etc/tools.bms "$opt" "$t /storage/emulated/0/Download/output"; then
     echo "Repacking completed successfully."
   else
     echo "Error during repacking."
