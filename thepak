@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Define the password
-PASSWORD="your_password_here"
+PASSWORD="password"
 
 # Prompt for the password
 echo -n "Enter password: "
