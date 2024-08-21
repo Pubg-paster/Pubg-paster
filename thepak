@@ -1,0 +1,100 @@
+#!/usr/bin/env bash
+
+# Prompt for the password
+read -sp "Enter password: " input_password
+echo
+
+# Verify the password
+if [[ "$input_password" != "${PASSWORD:-password}" ]]; then
+    echo "Incorrect password. Exiting."
+    exit 1
+fi
+
+source etc/banner
+# Banner Add
+echo -e "executing: ${LIGHTGREEN}ThePAK${NOCOLOR}"
+echo "-----------------------"
+
+OUTPUT_DIR="/storage/emulated/0/Download/output"
+PAK_DIR="$OUTPUT_DIR/pak"
+
+# Create directories if they don't exist
+mkdir -p "$OUTPUT_DIR"
+mkdir -p "$PAK_DIR"
+
+unpacking () {
+  if qemu-i386 $PREFIX/share/quickbms/quickbms -Q etc/tools.bms "$opt" "$PAK_DIR"; then
+    echo "Unpacking completed successfully."
+  else
+    echo "Error during unpacking."
+  fi
+}
+
+repacking () {
+  if qemu-i386 $PREFIX/share/quickbms/quickbms -w -r -r etc/tools.bms "$opt" "$PAK_DIR"; then
+    echo "Repacking completed successfully."
+  else
+    echo "Error during repacking."
+  fi
+}
+
+search_files () {
+  read -p "Enter the filename to search: " filename
+  find "$PAK_DIR" -type f -name "*$filename*" -print
+}
+
+function unpack {
+  prompt="Please select a file to unpack:"
+  options=( $(find *.pak) )
+
+  PS3="$prompt "
+  select opt in "${options[@]}" "Quit"; do 
+    if (( REPLY == 1 + ${#options[@]} )); then
+        exit
+    elif (( REPLY > 0 && REPLY <= ${#options[@]} )); then
+        echo "You picked $opt which is file $REPLY"
+        unpacking
+        break
+    else
+        echo "Invalid option. Try another one."
+    fi
+  done
+}
+
+function repack {
+  prompt="Please select a file to repack:"
+  options=( $(find *.pak) )
+
+  PS3="$prompt "
+  select opt in "${options[@]}" "Quit"; do 
+    if (( REPLY == 1 + ${#options[@]} )); then
+        exit
+    elif (( REPLY > 0 && REPLY <= ${#options[@]} )); then
+        echo "You picked $opt which is file $REPLY"
+        repacking
+        break
+    else
+        echo "Invalid option. Try another one."
+    fi
+  done
+}
+
+PS3='Please enter your choice: '
+options=("Unpack" "Repack" "Search Files" "Quit")
+select opt in "${options[@]}"; do
+    case $opt in
+        "Unpack")
+            unpack
+            ;;
+        "Repack")
+            repack
+            ;;
+        "Search Files")
+            search_files
+            ;;
+        "Quit")
+            break
+            ;;
+        *) echo "Invalid option $REPLY";;
+    esac
+done
