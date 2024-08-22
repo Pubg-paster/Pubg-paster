@@ -14,11 +14,11 @@ if [[ -d "output" ]]
 fi
 
 unpacking () {
-  qemu-i386 $PREFIX/share/quickbms/quickbms -Q etc/tools.bms $opt $opt /storage/emulated/0/Download/PUBG-PASTER/output 
+  qemu-i386 $PREFIX/share/quickbms/quickbms -Q etc/tools.bms $opt $opt 
 }
 
 repacking () {
-  qemu-i386 $PREFIX/share/quickbms/quickbms -w -r -r etc/tools.bms $opt $opt /storage/emulated/0/Download/PUBG-PASTER/output 
+  qemu-i386 $PREFIX/share/quickbms/quickbms -w -r -r etc/tools.bms $opt $opt  
 }
 
 function unpack {
