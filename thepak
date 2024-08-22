@@ -1,94 +1,63 @@
 #!/usr/bin/env bash
 
-# Define the correct password
-correct_password="DRAJ"
-
-# Prompt the user for the password
-echo -n "Enter password: "
-read -s entered_password
-echo
-
-# Verify the password
-if [[ "$entered_password" != "$correct_password" ]]; then
-    echo "Incorrect password. Exiting..."
-    exit 1
-fi
-
 source etc/banner
 # Banner Add
-echo -e "executing: ${LIGHTGREEN} Pubg-paster"
+echo -e "executing: ${LIGHTGREEN}Pubg-paster${NOCOLOR}"
 echo "-----------------------"
 
-PUBG_PASTER_DIR="/storage/emulated/0/Download/PUBG-PASTER"
-OUTPUT_DIR="$PUBG_PASTER_DIR/output"
-INPUT_DIR="$PUBG_PASTER_DIR/INPUTpak"
-
-if [[ ! -d "$PUBG_PASTER_DIR" ]]; then
-    mkdir -p "$PUBG_PASTER_DIR"
+if [[ -d "output" ]]
+  then
+    echo ""
+  else
+    echo ""
+    mkdir output
 fi
-
-if [[ ! -d "$OUTPUT_DIR" ]]; then
-    mkdir -p "$OUTPUT_DIR"
-fi
-
-if [[ ! -d "$INPUT_DIR" ]]; then
-    mkdir -p "$INPUT_DIR"
-fi
-
-log_file="$OUTPUT_DIR/operation.log"
 
 unpacking () {
-  qemu-i386 $PREFIX/share/quickbms/quickbms -Q etc/tools.bms "$1" "$OUTPUT_DIR" >> "$log_file" 2>&1
-  if [[ $? -ne 0 ]]; then
-    echo "Error unpacking $1" | tee -a "$log_file"
-  else
-    echo "Successfully unpacked $1" | tee -a "$log_file"
-  fi
+  qemu-i386 $PREFIX/share/quickbms/quickbms -Q etc/tools.bms $opt $opt /storage/emulated/0/Download/PUBG-PASTER/output 
 }
 
 repacking () {
-  qemu-i386 $PREFIX/share/quickbms/quickbms -w -r -r etc/tools.bms "$1" "$OUTPUT_DIR" >> "$log_file" 2>&1
-  if [[ $? -ne 0 ]]; then
-    echo "Error repacking $1" | tee -a "$log_file"
-  else
-    echo "Successfully repacked $1" | tee -a "$log_file"
-  fi
+  qemu-i386 $PREFIX/share/quickbms/quickbms -w -r -r etc/tools.bms $opt $opt /storage/emulated/0/Download/PUBG-PASTER/output 
 }
 
 function unpack {
-    prompt="Please select a file to unpack:"
-    options=( $(find "$INPUT_DIR" -name "*.pak") )
+prompt="Please select a file to unpack:"
+options=( $(find *.pak) )
 
-    PS3="$prompt "
-    select opt in "${options[@]}" "Quit"; do
-        if (( REPLY == 1 + ${#options[@]} )); then
-            exit
-        elif (( REPLY > 0 && REPLY <= ${#options[@]} )); then
-            echo "You picked $opt which is file $REPLY"
-            unpacking "$opt"
-            break
-        else
-            echo "Invalid option. Try another one."
-        fi
-    done
+PS3="$prompt "
+select opt in "${options[@]}" "Quit" ; do 
+    if (( REPLY == 1 + ${#options[@]} )) ; then
+        exit
+
+    elif (( REPLY > 0 && REPLY <= ${#options[@]} )) ; then
+        echo  "You picked $opt which is file $REPLY"
+         unpacking
+        break
+
+    else
+        echo "Invalid option. Try another one."
+    fi
+done
 }
 
 function repack {
-    prompt="Please select a file to repack:"
-    options=( $(find "$INPUT_DIR" -name "*.pak") )
+prompt="Please select a file to repack:"
+options=( $(find *.pak) )
 
-    PS3="$prompt "
-    select opt in "${options[@]}" "Quit"; do
-        if (( REPLY == 1 + ${#options[@]} )); then
-            exit
-        elif (( REPLY > 0 && REPLY <= ${#options[@]} )); then
-            echo "You picked $opt which is file $REPLY"
-            repacking "$opt"
-            break
-        else
-            echo "Invalid option. Try another one."
-        fi
-    done
+PS3="$prompt "
+select opt in "${options[@]}" "Quit" ; do 
+    if (( REPLY == 1 + ${#options[@]} )) ; then
+        exit
+
+    elif (( REPLY > 0 && REPLY <= ${#options[@]} )) ; then
+        echo  "You picked $opt which is file $REPLY"
+         repacking
+        break
+    else
+        echo "Invalid option. Try another one."
+    fi
+done
 }
 
 PS3='Please enter your choice: '
@@ -98,13 +67,15 @@ do
     case $opt in
         "Unpack")
             unpack
+            break
             ;;
         "Repack")
             repack
+            
             ;;
         "Quit")
             break
             ;;
         *) echo "invalid option $REPLY";;
     esac
-done
+done 
