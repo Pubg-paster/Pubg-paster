@@ -82,12 +82,6 @@ function repack {
     done
 }
 
-function search_text {
-    echo -n "Enter text to search: "
-    read search_text
-    grep -R "$search_text" "$OUTPUT_DIR"
-}
-
 PS3='Please enter your choice: '
 options=("Unpack" "Repack" "Search Text" "Quit")
 select opt in "${options[@]}"
