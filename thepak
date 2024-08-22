@@ -20,6 +20,7 @@ INPUT_DIR="/storage/emulated/0/Download/INPUTpak"
 
 if [[ ! -d "$OUTPUT_DIR" ]]; then
     mkdir -p "$OUTPUT_DIR"
+    mkdir -p "$INPUTpak_DIR"
 fi
 
 log_file="$OUTPUT_DIR/operation.log"
