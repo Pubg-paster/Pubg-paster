@@ -19,7 +19,7 @@ source etc/banner
 echo -e "executing: ${LIGHTGREEN} Pubg-paster"
 echo "-----------------------"
 
-PUBG_PASTER_DIR="/storage/emulated/0/Download/PUBG-PASTER"
+PUBG_PASTER_DIR="/storage/emulated/0/PUBG-PASTER"
 OUTPUT_DIR="$PUBG_PASTER_DIR/output"
 INPUT_DIR="$PUBG_PASTER_DIR/INPUTpak"
 
