@@ -1,15 +1,5 @@
 #!/usr/bin/env bash
 
-# Prompt for the password
-read -sp "Enter password: " input_password
-echo
-
-# Verify the password
-if [[ "$input_password" != "${PASSWORD:-password}" ]]; then
-    echo "Incorrect password. Exiting."
-    exit 1
-fi
-
 source etc/banner
 # Banner Add
 echo -e "executing: ${LIGHTGREEN} Pubg-paster"
@@ -20,103 +10,62 @@ INPUT_DIR="/storage/emulated/0/Download/INPUTpak"
 
 if [[ ! -d "$OUTPUT_DIR" ]]; then
     mkdir -p "$OUTPUT_DIR"
-    mkdir -p "$INPUTpak_DIR"
+fi
+
+if [[ ! -d "$INPUT_DIR" ]]; then
+    mkdir -p "$INPUT_DIR"
 fi
 
 log_file="$OUTPUT_DIR/operation.log"
 
 unpacking () {
-  if qemu-i386 $PREFIX/share/quickbms/quickbms -Q etc/tools.bms "$opt" "$OUTPUT_DIR"; then
-    echo "Unpacking completed successfully." | tee -a "$log_file"
-  else
-    echo "Error during unpacking." | tee -a "$log_file"
-  fi
+  qemu-i386 $PREFIX/share/quickbms/quickbms -Q etc/tools.bms "$1" "$OUTPUT_DIR"
 }
 
 repacking () {
-  if qemu-i386 $PREFIX/share/quickbms/quickbms -w -r -r etc/tools.bms "$opt" "$OUTPUT_DIR"; then
-    echo "Repacking completed successfully." | tee -a "$log_file"
-  else
-    echo "Error during repacking." | tee -a "$log_file"
-  fi
-}
-
-search_word_in_file () {
-  local word=$1
-  local file=$2
-  if grep -q "$word" "$file"; then
-    echo "The word '$word' was found in the file '$file'."
-  else
-    echo "The word '$word' was not found in the file '$file'."
-  fi
-}
-
-convert_to_format () {
-  local format=$1
-  for file in "$OUTPUT_DIR"/*; do
-    case $format in
-      "uasset")
-        # Conversion logic for .uasset
-        echo "Converting $file to .uasset format"
-        ;;
-      "uexp")
-        # Conversion logic for .uexp
-        echo "Converting $file to .uexp format"
-        ;;
-      "lua")
-        # Conversion logic for .lua
-        echo "Converting $file to .lua format"
-        ;;
-      "txt")
-        # Conversion logic for .txt
-        echo "Converting $file to .txt format"
-        ;;
-      *)
-        echo "Unsupported format: $format"
-        ;;
-    esac
-  done
+  qemu-i386 $PREFIX/share/quickbms/quickbms -w -r -r etc/tools.bms "$1" "$OUTPUT_DIR"
 }
 
 function unpack {
-  prompt="Please select a file to unpack:"
-  options=( $(find "$INPUT_DIR" -name "*.pak") )
+    prompt="Please select a file to unpack:"
+    options=( $(find "$INPUT_DIR" -name "*.pak") )
 
-  PS3="$prompt "
-  select opt in "${options[@]}" "Quit"; do 
-    if (( REPLY == 1 + ${#options[@]} )); then
-        exit
-    elif (( REPLY > 0 && REPLY <= ${#options[@]} )); then
-        echo "You picked $opt which is file $REPLY"
-        unpacking
-        break
-    else
-        echo "Invalid option. Try another one."
-    fi
-  done
+    PS3="$prompt "
+    select opt in "${options[@]}" "Quit"; do
+        if (( REPLY == 1 + ${#options[@]} )); then
+            exit
+        elif (( REPLY > 0 && REPLY <= ${#options[@]} )); then
+            echo "You picked $opt which is file $REPLY"
+            unpacking "$opt"
+            break
+        else
+            echo "Invalid option. Try another one."
+        fi
+    done
 }
 
 function repack {
-  prompt="Please select a file to repack:"
-  options=( $(find "$INPUT_DIR" -name "*.pak") )
+    prompt="Please select a file to repack:"
+    options=( $(find "$INPUT_DIR" -name "*.pak") )
 
-  PS3="$prompt "
-  select opt in "${options[@]}" "Quit"; do 
-    if (( REPLY == 1 + ${#options[@]} )); then
-        exit
-    elif (( REPLY > 0 && REPLY <= ${#options[@]} )); then
-        echo "You picked $opt which is file $REPLY"
-        repacking
-        break
-    else
-        echo "Invalid option. Try another one."
-    fi
-  done
+    PS3="$prompt "
+    select opt in "${options[@]}" "Quit"; do
+        if (( REPLY == 1 + ${#options[@]} )); then
+            exit
+        elif (( REPLY > 0 && REPLY <= ${#options[@]} )); then
+            echo "You picked $opt which is file $REPLY"
+            repacking "$opt"
+            break
+        else
+            echo "Invalid option. Try another one."
+        fi
+    done
 }
 
 PS3='Please enter your choice: '
-options=("Unpack" "Repack" "Search Word in File" "Convert to uasset" "Convert to uexp" "Convert to lua" "Convert to txt" "Quit")
-select opt in "${options[@]}"; do
+options=("Unpack" "Repack" "Quit")
+select opt in "${options[@]}"
+do
     case $opt in
         "Unpack")
             unpack
@@ -124,26 +73,19 @@ select opt in "${options[@]}"; do
         "Repack")
             repack
             ;;
-        "Search Word in File")
-            read -p "Enter the word to search: " word
-            read -p "Enter the file to search in: " file
-            search_word_in_file "$word" "$file"
-            ;;
-        "Convert to uasset")
-            convert_to_format "uasset"
-            ;;
-        "Convert to uexp")
-            convert_to_format "uexp"
-            ;;
-        "Convert to lua")
-            convert_to_format "lua"
-            ;;
-        "Convert to txt")
-            convert_to_format "txt"
-            ;;
         "Quit")
             break
             ;;
-        *) echo "Invalid option $REPLY";;
+        *) echo "invalid option $REPLY";;
     esac
 done
+
+# Prompt for the password
+read -sp "Enter password: " input_password
+echo
+
+# Verify the password
+if [[ "$input_password" != "${PASSWORD:-password}" ]]; then
+    echo "Incorrect password. Exiting."
+    exit 1
+fi
