@@ -83,7 +83,7 @@ function repack {
 }
 
 PS3='Please enter your choice: '
-options=("Unpack" "Repack" "Search Text" "Quit")
+options=("Unpack" "Repack" "Quit")
 select opt in "${options[@]}"
 do
     case $opt in
@@ -92,9 +92,6 @@ do
             ;;
         "Repack")
             repack
-            ;;
-        "Search Text")
-            search_text
             ;;
         "Quit")
             break
