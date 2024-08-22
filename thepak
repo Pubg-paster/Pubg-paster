@@ -1,12 +1,31 @@
 #!/usr/bin/env bash
 
+# Define the correct password
+correct_password="DRAJ"
+
+# Prompt the user for the password
+echo -n "Enter password: "
+read -s entered_password
+echo
+
+# Verify the password
+if [[ "$entered_password" != "$correct_password" ]]; then
+    echo "Incorrect password. Exiting..."
+    exit 1
+fi
+
 source etc/banner
 # Banner Add
 echo -e "executing: ${LIGHTGREEN} Pubg-paster"
 echo "-----------------------"
 
-OUTPUT_DIR="/storage/emulated/0/Download/output"
-INPUT_DIR="/storage/emulated/0/Download/INPUTpak"
+PUBG_PASTER_DIR="/storage/emulated/0/Download/PUBG-PASTER"
+OUTPUT_DIR="$PUBG_PASTER_DIR/output"
+INPUT_DIR="$PUBG_PASTER_DIR/INPUTpak"
+
+if [[ ! -d "$PUBG_PASTER_DIR" ]]; then
+    mkdir -p "$PUBG_PASTER_DIR"
+fi
 
 if [[ ! -d "$OUTPUT_DIR" ]]; then
     mkdir -p "$OUTPUT_DIR"
@@ -19,11 +38,21 @@ fi
 log_file="$OUTPUT_DIR/operation.log"
 
 unpacking () {
-  qemu-i386 $PREFIX/share/quickbms/quickbms -Q etc/tools.bms "$1" "$OUTPUT_DIR"
+  qemu-i386 $PREFIX/share/quickbms/quickbms -Q etc/tools.bms "$1" "$OUTPUT_DIR" >> "$log_file" 2>&1
+  if [[ $? -ne 0 ]]; then
+    echo "Error unpacking $1" | tee -a "$log_file"
+  else
+    echo "Successfully unpacked $1" | tee -a "$log_file"
+  fi
 }
 
 repacking () {
-  qemu-i386 $PREFIX/share/quickbms/quickbms -w -r -r etc/tools.bms "$1" "$OUTPUT_DIR"
+  qemu-i386 $PREFIX/share/quickbms/quickbms -w -r -r etc/tools.bms "$1" "$OUTPUT_DIR" >> "$log_file" 2>&1
+  if [[ $? -ne 0 ]]; then
+    echo "Error repacking $1" | tee -a "$log_file"
+  else
+    echo "Successfully repacked $1" | tee -a "$log_file"
+  fi
 }
 
 function unpack {
@@ -79,13 +108,3 @@ do
         *) echo "invalid option $REPLY";;
     esac
 done
-
-# Prompt for the password
-read -sp "Enter password: " input_password
-echo
-
-# Verify the password
-if [[ "$input_password" != "${PASSWORD:-password}" ]]; then
-    echo "Incorrect password. Exiting."
-    exit 1
-fi
