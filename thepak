@@ -19,12 +19,21 @@ source etc/banner
 echo -e "executing: ${LIGHTGREEN} Pubg-paster"
 echo "-----------------------"
 
-PUBG_PASTER_DIR="/storage/emulated/0/PUBG-PASTER"
+PUBG_PASTER_DIR="/storage/emulated/0/Download/PUBG-PASTER"
 OUTPUT_DIR="$PUBG_PASTER_DIR/output"
 INPUT_DIR="$PUBG_PASTER_DIR/INPUTpak"
 
-# Create directories if they don't exist
-mkdir -p "$PUBG_PASTER_DIR" "$OUTPUT_DIR" "$INPUT_DIR"
+if [[ ! -d "$PUBG_PASTER_DIR" ]]; then
+    mkdir -p "$PUBG_PASTER_DIR"
+fi
+
+if [[ ! -d "$OUTPUT_DIR" ]]; then
+    mkdir -p "$OUTPUT_DIR"
+fi
+
+if [[ ! -d "$INPUT_DIR" ]]; then
+    mkdir -p "$INPUT_DIR"
+fi
 
 log_file="$OUTPUT_DIR/operation.log"
 
