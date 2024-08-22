@@ -26,7 +26,7 @@ git clone https://github.com/Pubg-paster/Pubg-paster.git
 ```
 5. Open ThePAK directory and run setup.
 ```
-cd ThePAK
+cd Pubg-paster
 
 chmod +x setup
 
