@@ -12,7 +12,7 @@ fi
 
 source etc/banner
 # Banner Add
-echo -e "executing: ${LIGHTGREEN}ThePAK${NOCOLOR}"
+echo -e "executing: ${LIGHTGREEN} Pubg-paster"
 echo "-----------------------"
 
 OUTPUT_DIR="/storage/emulated/0/Download/output"
