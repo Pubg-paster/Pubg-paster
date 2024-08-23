@@ -5,26 +5,36 @@ source etc/banner
 echo -e "executing: ${LIGHTGREEN} Pubg-paster${NOCOLOR}"
 echo "-----------------------"
 
-# Set trial period expiration date (YYYY-MM-DD)
-TRIAL_EXPIRATION="2024-09-01"
+# Set the trial period duration in seconds (2 minutes = 120 seconds)
+TRIAL_DURATION=120
 # Set the trial password
 TRIAL_PASSWORD="1234"
 
-# Check if the current date is within the trial period
-current_date=$(date +%Y-%m-%d)
-if [[ "$current_date" > "$TRIAL_EXPIRATION" ]]; then
-    echo "The trial period has expired."
-    exit 1
+# File to store the start time
+START_TIME_FILE="/tmp/pubg_paster_start_time"
+
+# Check if the start time file exists
+if [[ ! -f "$START_TIME_FILE" ]]; then
+    # Record the start time
+    date +%s > "$START_TIME_FILE"
 fi
 
-# Prompt the user for the password
-read -p "Enter the trial password: " input_password
-echo
+# Read the start time
+start_time=$(cat "$START_TIME_FILE")
+current_time=$(date +%s)
+elapsed_time=$((current_time - start_time))
 
-# Validate the password
-if [[ "$input_password" != "$TRIAL_PASSWORD" ]]; then
-    echo "Invalid password."
-    exit 1
+# Check if the trial period has expired
+if (( elapsed_time > TRIAL_DURATION )); then
+    # Prompt the user for the password
+    read -p "Enter the trial password: " input_password
+    echo
+
+    # Validate the password
+    if [[ "$input_password" != "$TRIAL_PASSWORD" ]]; then
+        echo "Invalid password."
+        exit 1
+    fi
 fi
 
 OUTPUT_DIR="/storage/emulated/0/PUBGPASTER/output"
