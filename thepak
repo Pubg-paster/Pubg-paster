@@ -5,16 +5,6 @@ source etc/banner
 echo -e "executing: ${LIGHTGREEN} Pubg-paster${NOCOLOR}"
 echo "-----------------------"
 
-# Password Protection
-read -p "Enter Password: " password
-if [[ "$password" != "DRAJ" ]]; then
-    echo "Incorrect password!"
-    exit 1
-fi
-
-# Timer for 2 minutes
-( sleep 120 && echo "Session expired!" && exit 1 ) &
-
 OUTPUT_DIR="/storage/emulated/0/PUBGPASTER/output"
 INPUT_DIR="/storage/emulated/0/PUBGPASTER/INPUT"
 
@@ -109,3 +99,9 @@ select opt in "${options[@]}"; do
         *) echo "Invalid option $REPLY";;
     esac
 done
+
+# Password Protection
+read -p "Enter Password: " password
+if [[ "$password" != "DRAJ" ]]; then
+    echo "Incorrect password!"
+    exit 1
