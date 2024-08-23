@@ -2,7 +2,7 @@
 
 source etc/banner
 # Banner Add
-echo -e "executing: ${LIGHTGREEN}Pubg-paster${NOCOLOR}"
+echo -e "executing: ${LIGHTGREEN} Pubg-paster${NOCOLOR}"
 echo "-----------------------"
 
 if [[ -d "output" ]]
@@ -14,11 +14,11 @@ if [[ -d "output" ]]
 fi
 
 unpacking () {
-  qemu-i386 $PREFIX/share/quickbms/quickbms -Q etc/tools.bms $opt $opt 
+  qemu-i386 $PREFIX/share/quickbms/quickbms -Q etc/tools.bms $opt output
 }
 
 repacking () {
-  qemu-i386 $PREFIX/share/quickbms/quickbms -w -r -r etc/tools.bms $opt $opt  
+  qemu-i386 $PREFIX/share/quickbms/quickbms -w -r -r etc/tools.bms $opt output
 }
 
 function unpack {
@@ -78,4 +78,4 @@ do
             ;;
         *) echo "invalid option $REPLY";;
     esac
-done 
+done
