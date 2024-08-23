@@ -7,6 +7,7 @@ echo "-----------------------"
 
 OUTPUT_DIR="/storage/emulated/0/PUBGPASTER/output"
 INPUT_DIR="/storage/emulated/0/PUBGPASTER/INPUT"
+LOG_FILE="/storage/emulated/0/PUBGPASTER/log.txt"
 
 if [[ ! -d "$OUTPUT_DIR" ]]; then
     mkdir -p "$OUTPUT_DIR"
@@ -16,48 +17,30 @@ if [[ ! -d "$INPUT_DIR" ]]; then
     mkdir -p "$INPUT_DIR"
 fi
 
-# Initial login password
-read -p "Enter initial password: " password
-echo
-if [[ "$password" != "your_initial_password" ]]; then
-    echo "Incorrect password!"
-    exit 1
-fi
-
-# Function to prompt for password after 2 minutes
-password_check() {
-    sleep 120
-    read -p "Enter password to continue: " password
-    echo
-    if [[ "$password" != "DRAJ" ]]; then
-        echo "Incorrect password!"
-        exit 1
-    fi
+log() {
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" >> "$LOG_FILE"
 }
 
-# Start password check in the background
-password_check &
-
 unpacking () {
-  start_time=$(date +%s)
+  log "Starting unpacking: $opt"
   if qemu-i386 $PREFIX/share/quickbms/quickbms -9 -Q etc/tools.bms "$opt" "$OUTPUT_DIR"; then
     echo "Unpacking successful!"
+    log "Unpacking successful: $opt"
   else
     echo "Unpacking failed!"
+    log "Unpacking failed: $opt"
   fi
-  end_time=$(date +%s)
-  echo "Time taken: $((end_time - start_time)) seconds"
 }
 
 repacking () {
-  start_time=$(date +%s)
+  log "Starting repacking: $opt"
   if qemu-i386 $PREFIX/share/quickbms/quickbms -9 -w -r -r etc/tools.bms "$opt" "$OUTPUT_DIR"; then
     echo "Repacking successful!"
+    log "Repacking successful: $opt"
   else
     echo "Repacking failed!"
+    log "Repacking failed: $opt"
   fi
-  end_time=$(date +%s)
-  echo "Time taken: $((end_time - start_time)) seconds"
 }
 
 search_in_output () {
@@ -100,6 +83,17 @@ function repack {
     fi
   done
 }
+
+# Wait for 2 minutes before prompting for password
+sleep 120
+
+# Password prompt
+read -p "Enter password to continue: " password
+echo
+if [[ "$password" != "1234" ]]; then
+    echo "Incorrect password. Exiting..."
+    exit 1
+fi
 
 PS3='Please enter your choice: '
 options=("Unpack" "Repack" "Search in Output" "Quit")
