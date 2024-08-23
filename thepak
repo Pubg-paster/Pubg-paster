@@ -8,7 +8,6 @@ echo "-----------------------"
 OUTPUT_DIR="/storage/emulated/0/PUBGPASTER/output"
 INPUT_DIR="/storage/emulated/0/PUBGPASTER/INPUT"
 LOG_FILE="/storage/emulated/0/PUBGPASTER/log.txt"
-PASSWORD="DRAJ"
 
 if [[ ! -d "$OUTPUT_DIR" ]]; then
     mkdir -p "$OUTPUT_DIR"
@@ -23,28 +22,28 @@ log() {
 }
 
 unpacking () {
-  log "Starting unpacking: $opt"
+  echo "Unpacking in progress..."
   if qemu-i386 $PREFIX/share/quickbms/quickbms -9 -Q etc/tools.bms "$opt" "$OUTPUT_DIR"; then
     echo "Unpacking successful!"
-    log "Unpacking successful: $opt"
+    log "Unpacking successful for $opt"
   else
     echo "Unpacking failed!"
-    log "Unpacking failed: $opt"
+    log "Unpacking failed for $opt"
   fi
 }
 
 repacking () {
-  log "Starting repacking: $opt"
+  echo "Repacking in progress..."
   if qemu-i386 $PREFIX/share/quickbms/quickbms -9 -w -r -r etc/tools.bms "$opt" "$OUTPUT_DIR"; then
     echo "Repacking successful!"
-    log "Repacking successful: $opt"
+    log "Repacking successful for $opt"
   else
     echo "Repacking failed!"
-    log "Repacking failed: $opt"
+    log "Repacking failed for $opt"
   fi
 }
 
-search_in_output () {
+search_output () {
   read -p "Enter the text to search for: " search_text
   grep -R "$search_text" "$OUTPUT_DIR"
 }
@@ -85,31 +84,25 @@ function repack {
   done
 }
 
-login() {
-  read -p "Enter password: " input_password
-  echo
-  if [[ "$input_password" == "$PASSWORD" ]]; then
-    echo "Login successful!"
-    log "Login successful"
-  else
-    echo "Incorrect password!"
-    log "Incorrect password attempt"
+# Initial login with password DRAJ
+read -p "Enter password to login: " password
+echo
+if [[ "$password" != "DRAJ" ]]; then
+    echo "Incorrect password. Exiting..."
     exit 1
-  fi
-}
+fi
 
-change_password() {
-  sleep 600
-  PASSWORD="1234"
-  echo "Password has been changed to 1234"
-  log "Password changed to 1234"
-}
+# Wait for 5 minutes before setting the second password
+echo "Waiting for 5 minutes before setting the second password..."
+sleep 300
 
-# Start password change timer in the background
-change_password &
-
-# Login prompt
-login
+# Second password before unpacking menu
+read -p "Enter second password: " second_password
+echo
+if [[ "$second_password" != "1234" ]]; then
+    echo "Incorrect second password. Exiting..."
+    exit 1
+fi
 
 PS3='Please enter your choice: '
 options=("Unpack" "Repack" "Search in Output" "Quit")
