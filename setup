@@ -53,22 +53,9 @@ function quickbms_install {
   mkdir -p output
 }
 
-# Function to display countdown timer
-function countdown {
-  local SECONDS_LEFT=$1
-  while [ $SECONDS_LEFT -gt 0 ]; do
-    echo -ne "Time left: $SECONDS_LEFT\033[0K\r"
-    sleep 1
-    : $((SECONDS_LEFT--))
-  done
-  echo -e "\n${RED}Login key expired.${NOCOLOR}"
-  exit 1
-}
-
 # Function to check password
 function check_password {
-  read -sp "Enter password: " password
-  echo
+  read -p "Enter password: " password
   if [ "$password" != "DRAJ" ]; then
     echo -e "${RED}Incorrect password.${NOCOLOR}"
     exit 1
@@ -94,8 +81,8 @@ for pkg in ${packages[@]}; do
     fi
 done
 
-# Check password and start countdown timer for 1 day (86400 seconds)
-check_password
-countdown 86400
-
 quickbms_check
+
+# Prompt for password after installation
+echo -e "${YELLOW}Installation complete. Please log in.${NOCOLOR}"
+check_password
