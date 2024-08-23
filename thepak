@@ -32,6 +32,11 @@ repacking () {
   fi
 }
 
+search_in_output () {
+  read -p "Enter the text to search for: " search_text
+  grep -R "$search_text" "$OUTPUT_DIR"
+}
+
 function unpack {
   prompt="Please select a file to unpack:"
   options=( $(find "$INPUT_DIR" -name "*.pak") )
@@ -69,7 +74,7 @@ function repack {
 }
 
 PS3='Please enter your choice: '
-options=("Unpack" "Repack" "Quit")
+options=("Unpack" "Repack" "Search in Output" "Quit")
 select opt in "${options[@]}"; do
     case $opt in
         "Unpack")
@@ -78,6 +83,9 @@ select opt in "${options[@]}"; do
             ;;
         "Repack")
             repack
+            ;;
+        "Search in Output")
+            search_in_output
             ;;
         "Quit")
             break
