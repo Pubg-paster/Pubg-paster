@@ -79,6 +79,13 @@ function repack {
   done
 }
 
+# Password Protection
+read -p "Enter Password: " password
+if [[ "$password" != "DRAJ" ]]; then
+    echo "Incorrect password!"
+    exit 1
+
+
 PS3='Please enter your choice: '
 options=("Unpack" "Repack" "Search in Output" "Quit")
 select opt in "${options[@]}"; do
@@ -100,8 +107,3 @@ select opt in "${options[@]}"; do
     esac
 done
 
-# Password Protection
-read -p "Enter Password: " password
-if [[ "$password" != "DRAJ" ]]; then
-    echo "Incorrect password!"
-    exit 1
