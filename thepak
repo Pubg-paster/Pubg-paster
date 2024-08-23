@@ -8,6 +8,7 @@ echo "-----------------------"
 OUTPUT_DIR="/storage/emulated/0/PUBGPASTER/output"
 INPUT_DIR="/storage/emulated/0/PUBGPASTER/INPUT"
 TRIAL_DURATION=120  # 2 minutes in seconds
+PASSWORD="1234"
 
 # Create directories if they don't exist
 if [[ ! -d "$OUTPUT_DIR" ]]; then
@@ -22,8 +23,20 @@ fi
 trial_period () {
   echo "You are using a trial version. The script will exit in 2 minutes."
   sleep $TRIAL_DURATION
-  echo "Trial period has ended. Exiting..."
-  exit 0
+  echo "Trial period has ended. Please enter the password to continue."
+  password_check
+}
+
+# Function to check password
+password_check () {
+  read -sp "Enter password: " input_password
+  echo
+  if [[ "$input_password" == "$PASSWORD" ]]; then
+    echo "Password correct. Access granted."
+  else
+    echo "Incorrect password. Exiting..."
+    exit 1
+  fi
 }
 
 # Function to unpack files
