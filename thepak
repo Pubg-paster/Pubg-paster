@@ -5,65 +5,89 @@ source etc/banner
 echo -e "executing: ${LIGHTGREEN} Pubg-paster${NOCOLOR}"
 echo "-----------------------"
 
-if [[ -d "output" ]]
-  then
-    echo ""
-  else
-    echo ""
+# Check if output directory exists, if not create it
+if [[ ! -d "output" ]]; then
     mkdir output
 fi
 
+# Function to unpack files
 unpacking () {
-  qemu-i386 $PREFIX/share/quickbms/quickbms -Q etc/tools.bms $opt output
+  qemu-i386 $PREFIX/share/quickbms/quickbms -Q etc/tools.bms "$opt" output
 }
 
+# Function to repack files
 repacking () {
-  qemu-i386 $PREFIX/share/quickbms/quickbms -w -r -r etc/tools.bms $opt output
+  qemu-i386 $PREFIX/share/quickbms/quickbms -w -r -r etc/tools.bms "$opt" output
 }
 
+# Function to handle unpacking
 function unpack {
-prompt="Please select a file to unpack:"
-options=( $(find *.pak) )
+  prompt="Please select a file to unpack:"
+  options=( $(find *.pak) )
 
-PS3="$prompt "
-select opt in "${options[@]}" "Quit" ; do 
-    if (( REPLY == 1 + ${#options[@]} )) ; then
+  PS3="$prompt "
+  select opt in "${options[@]}" "Quit"; do 
+    if (( REPLY == 1 + ${#options[@]} )); then
         exit
-
-    elif (( REPLY > 0 && REPLY <= ${#options[@]} )) ; then
-        echo  "You picked $opt which is file $REPLY"
-         unpacking
+    elif (( REPLY > 0 && REPLY <= ${#options[@]} )); then
+        echo "You picked $opt which is file $REPLY"
+        unpacking
         break
-
     else
         echo "Invalid option. Try another one."
     fi
-done
+  done
 }
 
+# Function to handle repacking
 function repack {
-prompt="Please select a file to repack:"
-options=( $(find *.pak) )
+  prompt="Please select a file to repack:"
+  options=( $(find *.pak) )
 
-PS3="$prompt "
-select opt in "${options[@]}" "Quit" ; do 
-    if (( REPLY == 1 + ${#options[@]} )) ; then
+  PS3="$prompt "
+  select opt in "${options[@]}" "Quit"; do 
+    if (( REPLY == 1 + ${#options[@]} )); then
         exit
-
-    elif (( REPLY > 0 && REPLY <= ${#options[@]} )) ; then
-        echo  "You picked $opt which is file $REPLY"
-         repacking
+    elif (( REPLY > 0 && REPLY <= ${#options[@]} )); then
+        echo "You picked $opt which is file $REPLY"
+        repacking
         break
     else
         echo "Invalid option. Try another one."
     fi
-done
+  done
 }
 
+# Function to check if the script has been running for more than 1 day
+check_time_limit() {
+  start_time_file="start_time.txt"
+  current_time=$(date +%s)
+  one_day_seconds=$((24 * 60 * 60))
+
+  if [[ -f $start_time_file ]]; then
+    start_time=$(cat $start_time_file)
+    elapsed_time=$((current_time - start_time))
+
+    if (( elapsed_time > one_day_seconds )); then
+      echo "Time limit exceeded. Please enter the password to continue:"
+      read -s password
+      if [[ $password != "DRAJ" ]]; then
+        echo "Incorrect password. Exiting."
+        exit 1
+      fi
+    fi
+  else
+    echo $current_time > $start_time_file
+  fi
+}
+
+# Check time limit at the start
+check_time_limit
+
+# Main menu
 PS3='Please enter your choice: '
 options=("Unpack" "Repack" "Quit")
-select opt in "${options[@]}"
-do
+select opt in "${options[@]}"; do
     case $opt in
         "Unpack")
             unpack
@@ -71,11 +95,10 @@ do
             ;;
         "Repack")
             repack
-            
             ;;
         "Quit")
             break
             ;;
-        *) echo "invalid option $REPLY";;
+        *) echo "Invalid option $REPLY";;
     esac
 done
