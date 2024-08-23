@@ -16,7 +16,7 @@ function redirect {
  sleep 1
  echo -ne '#######################   (100%)\r'
  echo -ne '\n'
-bash thepak
+ bash thepak
 }
 
 function quickbms_check {
@@ -62,6 +62,20 @@ function check_password {
   fi
 }
 
+# Function to unpack files
+function unpack_files {
+  check_password
+  echo -e "${LIGHTGREEN}Unpacking files...${NOCOLOR}"
+  # Add your unpacking commands here
+}
+
+# Function to repack files
+function repack_files {
+  check_password
+  echo -e "${LIGHTGREEN}Repacking files...${NOCOLOR}"
+  # Add your repacking commands here
+}
+
 #Checking Required Packages
 echo -e "${YELLOW}Checking Required packages${NOCOLOR}"
 
@@ -83,6 +97,6 @@ done
 
 quickbms_check
 
-# Prompt for password after installation
-echo -e "${YELLOW}Installation complete. Please log in.${NOCOLOR}"
-check_password
+# Example usage of unpack and repack functions
+unpack_files
+repack_files
