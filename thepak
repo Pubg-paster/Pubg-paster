@@ -43,7 +43,7 @@ repacking () {
   fi
 }
 
-search_output () {
+search_in_output () {
   read -p "Enter the text to search for: " search_text
   grep -R "$search_text" "$OUTPUT_DIR"
 }
@@ -84,31 +84,35 @@ function repack {
   done
 }
 
+PS3='Please enter your choice: '
+options=("Unpack" "Repack" "Search in Output" "Quit")
+
 # Initial login with password DRAJ
 read -p "Enter password to login: " password
-echo
 if [[ "$password" != "DRAJ" ]]; then
     echo "Incorrect password. Exiting..."
     exit 1
 fi
 
-# Wait for 5 minutes before setting the second password
-echo "Waiting for 5 minutes before setting the second password..."
-sleep 300
-
-# Second password before unpacking menu
-read -p "Enter second password: " second_password
-echo
-if [[ "$second_password" != "1234" ]]; then
-    echo "Incorrect second password. Exiting..."
+# Run the tool for 5 minutes with a visible timer
+(
+    for ((i=300; i>0; i--)); do
+        echo -ne "Time remaining: $i\033[0K\r"
+        sleep 1
+    done
+    echo "Time limit reached. Exiting..."
     exit 1
-fi
+) &
 
-PS3='Please enter your choice: '
-options=("Unpack" "Repack" "Search in Output" "Quit")
 select opt in "${options[@]}"; do
     case $opt in
         "Unpack")
+            # Second password before unpacking
+            read -p "Enter password to proceed: " password
+            if [[ "$password" != "1234" ]]; then
+                echo "Incorrect password. Exiting..."
+                exit 1
+            fi
             unpack
             break
             ;;
