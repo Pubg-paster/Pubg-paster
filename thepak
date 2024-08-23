@@ -5,12 +5,15 @@ source etc/banner
 echo -e "executing: ${LIGHTGREEN} Pubg-paster${NOCOLOR}"
 echo "-----------------------"
 
-# Initial Password Protection
+# Password Protection
 read -p "Enter Password: " password
 if [[ "$password" != "DRAJ" ]]; then
     echo "Incorrect password!"
     exit 1
 fi
+
+# Timer for 2 minutes
+( sleep 120 && echo "Session expired!" && exit 1 ) &
 
 OUTPUT_DIR="/storage/emulated/0/PUBGPASTER/output"
 INPUT_DIR="/storage/emulated/0/PUBGPASTER/INPUT"
@@ -85,19 +88,6 @@ function repack {
     fi
   done
 }
-
-# Function to prompt for password after 2 minutes
-function password_prompt {
-  sleep 120
-  read -p "Enter Password: " password
-  if [[ "$password" != "1234" ]]; then
-      echo "Incorrect password!"
-      exit 1
-  fi
-}
-
-# Start the password prompt in the background
-password_prompt &
 
 PS3='Please enter your choice: '
 options=("Unpack" "Repack" "Search in Output" "Quit")
