@@ -84,16 +84,19 @@ function repack {
   done
 }
 
-# Wait for 2 minutes before prompting for password
-sleep 120
+# Function to prompt for password after 2 minutes
+password_prompt() {
+  sleep 120
+  read -p "Enter password to continue: " password
+  echo
+  if [[ "$password" != "1234" ]]; then
+      echo "Incorrect password. Exiting..."
+      exit 1
+  fi
+}
 
-# Password prompt
-read -p "Enter password to continue: " password
-echo
-if [[ "$password" != "1234" ]]; then
-    echo "Incorrect password. Exiting..."
-    exit 1
-fi
+# Start the password prompt in the background
+password_prompt &
 
 PS3='Please enter your choice: '
 options=("Unpack" "Repack" "Search in Output" "Quit")
