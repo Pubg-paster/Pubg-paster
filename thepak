@@ -6,7 +6,7 @@ echo -e "executing: ${LIGHTGREEN} Pubg-paster${NOCOLOR}"
 echo "-----------------------"
 
 # Initial Password Protection
-read -p "Enter password: " password
+read -p "Enter Password: " password
 if [[ "$password" != "DRAJ" ]]; then
     echo "Incorrect password!"
     exit 1
@@ -86,18 +86,18 @@ function repack {
   done
 }
 
-# Function to prompt for the second password after 2 minutes
-function second_password_prompt {
+# Function to prompt for password after 2 minutes
+function password_prompt {
   sleep 120
-  read -p "Enter second password: " second_password
-  if [[ "$second_password" != "1234" ]]; then
-      echo "Incorrect second password!"
+  read -p "Enter Password: " password
+  if [[ "$password" != "1234" ]]; then
+      echo "Incorrect password!"
       exit 1
   fi
 }
 
-# Start the second password prompt in the background
-second_password_prompt &
+# Start the password prompt in the background
+password_prompt &
 
 PS3='Please enter your choice: '
 options=("Unpack" "Repack" "Search in Output" "Quit")
