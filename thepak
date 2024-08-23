@@ -5,25 +5,36 @@ source etc/banner
 echo -e "executing: ${LIGHTGREEN} Pubg-paster${NOCOLOR}"
 echo "-----------------------"
 
-# Check if output directory exists, if not create it
-if [[ ! -d "output" ]]; then
-    mkdir output
+OUTPUT_DIR="/storage/emulated/0/PUBGPASTER/output"
+INPUT_DIR="/storage/emulated/0/PUBGPASTER/INPUT"
+
+if [[ ! -d "$OUTPUT_DIR" ]]; then
+    mkdir -p "$OUTPUT_DIR"
 fi
 
-# Function to unpack files
+if [[ ! -d "$INPUT_DIR" ]]; then
+    mkdir -p "$INPUT_DIR"
+fi
+
 unpacking () {
-  qemu-i386 $PREFIX/share/quickbms/quickbms -Q etc/tools.bms "$opt" output
+  if qemu-i386 $PREFIX/share/quickbms/quickbms -Q etc/tools.bms "$opt" "$OUTPUT_DIR"; then
+    echo "Unpacking successful!"
+  else
+    echo "Unpacking failed!"
+  fi
 }
 
-# Function to repack files
 repacking () {
-  qemu-i386 $PREFIX/share/quickbms/quickbms -w -r -r etc/tools.bms "$opt" output
+  if qemu-i386 $PREFIX/share/quickbms/quickbms -w -r -r etc/tools.bms "$opt" "$OUTPUT_DIR"; then
+    echo "Repacking successful!"
+  else
+    echo "Repacking failed!"
+  fi
 }
 
-# Function to handle unpacking
 function unpack {
   prompt="Please select a file to unpack:"
-  options=( $(find *.pak) )
+  options=( $(find "$INPUT_DIR" -name "*.pak") )
 
   PS3="$prompt "
   select opt in "${options[@]}" "Quit"; do 
@@ -39,10 +50,9 @@ function unpack {
   done
 }
 
-# Function to handle repacking
 function repack {
   prompt="Please select a file to repack:"
-  options=( $(find *.pak) )
+  options=( $(find "$INPUT_DIR" -name "*.pak") )
 
   PS3="$prompt "
   select opt in "${options[@]}" "Quit"; do 
@@ -58,33 +68,6 @@ function repack {
   done
 }
 
-# Function to check if the script has been running for more than 1 day
-check_time_limit() {
-  start_time_file="start_time.txt"
-  current_time=$(date +%s)
-  one_day_seconds=$((24 * 60 * 60))
-
-  if [[ -f $start_time_file ]]; then
-    start_time=$(cat $start_time_file)
-    elapsed_time=$((current_time - start_time))
-
-    if (( elapsed_time > one_day_seconds )); then
-      echo "Time limit exceeded. Please enter the password to continue:"
-      read -s password
-      if [[ $password != "DRAJ" ]]; then
-        echo "Incorrect password. Exiting."
-        exit 1
-      fi
-    fi
-  else
-    echo $current_time > $start_time_file
-  fi
-}
-
-# Check time limit at the start
-check_time_limit
-
-# Main menu
 PS3='Please enter your choice: '
 options=("Unpack" "Repack" "Quit")
 select opt in "${options[@]}"; do
