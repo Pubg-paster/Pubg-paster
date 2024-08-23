@@ -17,7 +17,7 @@ if [[ ! -d "$INPUT_DIR" ]]; then
 fi
 
 unpacking () {
-  if qemu-i386 $PREFIX/share/quickbms/quickbms -Q etc/tools.bms "$opt" "$OUTPUT_DIR"; then
+  if qemu-i386 $PREFIX/share/quickbms/quickbms -9 -Q etc/tools.bms "$opt" "$OUTPUT_DIR"; then
     echo "Unpacking successful!"
   else
     echo "Unpacking failed!"
@@ -25,7 +25,7 @@ unpacking () {
 }
 
 repacking () {
-  if qemu-i386 $PREFIX/share/quickbms/quickbms -w -r -r etc/tools.bms "$opt" "$OUTPUT_DIR"; then
+  if qemu-i386 $PREFIX/share/quickbms/quickbms -9 -w -r -r etc/tools.bms "$opt" "$OUTPUT_DIR"; then
     echo "Repacking successful!"
   else
     echo "Repacking failed!"
