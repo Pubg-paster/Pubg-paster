@@ -9,14 +9,14 @@ echo "-----------------------"
 quickbms_dir=$PREFIX/share/quickbms
 
 function redirect {
- echo -e "${LIGHTGREEN}STARTING Pubg-paster"
+ echo -e "${LIGHTGREEN}STARTING THEPAK${NOCOLOR}"
  echo -ne '#####                     (33%)\r'
  sleep 1
  echo -ne '#############             (66%)\r'
  sleep 1
  echo -ne '#######################   (100%)\r'
  echo -ne '\n'
- bash thepak
+bash thepak
 }
 
 function quickbms_check {
@@ -44,7 +44,7 @@ function quickbms_install {
     echo -e "${RED}Failed to unzip quickbms.${NOCOLOR}"
     exit 1
   fi
-  mkdir -p $PREFIX/share/quickbms
+  mkdir -p $quickbms_dir
   chmod +x quickbms_4gb_files
   yes | cp -rf quickbms_4gb_files $quickbms_dir/quickbms
   chmod +x etc/tools.bms thepak
@@ -55,25 +55,13 @@ function quickbms_install {
 
 # Function to check password
 function check_password {
-  read -p "Enter password: " password
-  if [ "$password" != "DRAJ" ]; then
-    echo -e "${RED}Incorrect password.${NOCOLOR}"
+  read -p "Enter password: " input_password
+  if [ "$input_password" == "DRAJ" ]; then
+    echo -e "${LIGHTGREEN}Password accepted.${NOCOLOR}"
+  else
+    echo -e "${RED}Incorrect password. Exiting.${NOCOLOR}"
     exit 1
   fi
-}
-
-# Function to unpack files
-function unpack_files {
-  check_password
-  echo -e "${LIGHTGREEN}Unpacking files...${NOCOLOR}"
-  # Add your unpacking commands here
-}
-
-# Function to repack files
-function repack_files {
-  check_password
-  echo -e "${LIGHTGREEN}Repacking files...${NOCOLOR}"
-  # Add your repacking commands here
 }
 
 #Checking Required Packages
@@ -95,8 +83,7 @@ for pkg in ${packages[@]}; do
     fi
 done
 
-quickbms_check
+# Check password before proceeding
+check_password
 
-# Example usage of unpack and repack functions
-unpack_files
-repack_files
+quickbms_check
