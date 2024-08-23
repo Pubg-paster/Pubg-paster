@@ -73,6 +73,30 @@ function repack {
   done
 }
 
+function login {
+  local password
+  read -sp "Enter password: " password
+  echo
+  if [[ "$password" == "DRAJ" ]]; then
+    echo "Login successful! You have 10 minutes."
+    sleep 600
+    echo "Time's up! Please enter the new password."
+    read -sp "Enter password: " password
+    echo
+    if [[ "$password" == "1234" ]]; then
+      echo "Login successful!"
+    else
+      echo "Incorrect password. Exiting."
+      exit 1
+    fi
+  else
+    echo "Incorrect password. Exiting."
+    exit 1
+  fi
+}
+
+login
+
 PS3='Please enter your choice: '
 options=("Unpack" "Repack" "Search in Output" "Quit")
 select opt in "${options[@]}"; do
