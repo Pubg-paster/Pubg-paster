@@ -7,6 +7,8 @@ echo "-----------------------"
 
 OUTPUT_DIR="/storage/emulated/0/PUBGPASTER/output"
 INPUT_DIR="/storage/emulated/0/PUBGPASTER/INPUT"
+LOG_FILE="/storage/emulated/0/PUBGPASTER/log.txt"
+PASSWORD="DRAJ"
 
 if [[ ! -d "$OUTPUT_DIR" ]]; then
     mkdir -p "$OUTPUT_DIR"
@@ -16,19 +18,29 @@ if [[ ! -d "$INPUT_DIR" ]]; then
     mkdir -p "$INPUT_DIR"
 fi
 
+log() {
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" >> "$LOG_FILE"
+}
+
 unpacking () {
+  echo "Unpacking in progress..."
   if qemu-i386 $PREFIX/share/quickbms/quickbms -9 -Q etc/tools.bms "$opt" "$OUTPUT_DIR"; then
     echo "Unpacking successful!"
+    log "Unpacking successful for $opt"
   else
     echo "Unpacking failed!"
+    log "Unpacking failed for $opt"
   fi
 }
 
 repacking () {
+  echo "Repacking in progress..."
   if qemu-i386 $PREFIX/share/quickbms/quickbms -9 -w -r -r etc/tools.bms "$opt" "$OUTPUT_DIR"; then
     echo "Repacking successful!"
+    log "Repacking successful for $opt"
   else
     echo "Repacking failed!"
+    log "Repacking failed for $opt"
   fi
 }
 
@@ -73,25 +85,16 @@ function repack {
   done
 }
 
-function exit_script {
-  echo "Exiting the script. Goodbye!"
-  exit 0
-}
-
-function password_prompt {
-  sleep 120
-  read -p "Enter the trial key password: " password
+check_password() {
+  read -t 120 -p "Enter password to continue: " input_password
   echo
-  if [[ "$password" == "1234" ]]; then
+  if [[ "$input_password" == "$PASSWORD" ]]; then
     echo "Password correct. Continuing..."
   else
     echo "Incorrect password. Exiting..."
-    exit_script
+    exit 1
   fi
 }
-
-# Start the password prompt in the background
-password_prompt &
 
 PS3='Please enter your choice: '
 options=("Unpack" "Repack" "Search in Output" "Quit")
@@ -108,8 +111,9 @@ select opt in "${options[@]}"; do
             search_in_output
             ;;
         "Quit")
-            exit_script
+            break
             ;;
         *) echo "Invalid option $REPLY";;
     esac
+    check_password
 done
