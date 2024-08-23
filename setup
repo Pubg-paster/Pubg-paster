@@ -35,36 +35,67 @@ function quickbms_check {
 function quickbms_install {
   echo -e "${LIGHTGREEN}Installing required program..${NOCOLOR}"
   wget -q http://aluigi.altervista.org/papers/quickbms_linux.zip
-  sleep 1
+  if [ $? -ne 0 ]; then
+    echo -e "${RED}Failed to download quickbms.${NOCOLOR}"
+    exit 1
+  fi
   unzip -qq quickbms_linux.zip
-  sleep 1
-  mkdir $PREFIX/share/quickbms
-  sleep 1
+  if [ $? -ne 0 ]; then
+    echo -e "${RED}Failed to unzip quickbms.${NOCOLOR}"
+    exit 1
+  fi
+  mkdir -p $PREFIX/share/quickbms
   chmod +x quickbms_4gb_files
-  sleep 1
   yes | cp -rf quickbms_4gb_files $quickbms_dir/quickbms
-  sleep 1
   chmod +x etc/tools.bms thepak
-  sleep 1
   rm -rf quickbms*
   rm setup
-  mkdir output
+  mkdir -p output
 }
 
-#Checking Required Pakcages
+# Function to display countdown timer
+function countdown {
+  local SECONDS_LEFT=$1
+  while [ $SECONDS_LEFT -gt 0 ]; do
+    echo -ne "Time left: $SECONDS_LEFT\033[0K\r"
+    sleep 1
+    : $((SECONDS_LEFT--))
+  done
+  echo -e "\n${RED}Login key expired.${NOCOLOR}"
+  exit 1
+}
+
+# Function to check password
+function check_password {
+  read -sp "Enter password: " password
+  echo
+  if [ "$password" != "DRAJ" ]; then
+    echo -e "${RED}Incorrect password.${NOCOLOR}"
+    exit 1
+  fi
+}
+
+#Checking Required Packages
 echo -e "${YELLOW}Checking Required packages${NOCOLOR}"
 
 packages=("wget" "unzip" "curl" "x11-repo" "qemu-system-i386" "qemu-user-i386")
 
 for pkg in ${packages[@]}; do
-
     is_pkg_installed=$(dpkg-query -W --showformat='${Status}\n' ${pkg} | grep "install ok installed")
-
     if [ "${is_pkg_installed}" == "install ok installed" ]; then
-        echo -e ${GREEN}${pkg}${NOCOLOR} is installed.
-    else [ "" = "${is_pkg_installed}" ];
-     echo -e "${RED}No ${pkg}. Setting up ${pkg}.${NOCOLOR}" 
-    pkg install ${pkg} -y
+        echo -e "${GREEN}${pkg}${NOCOLOR} is installed."
+    else
+        echo -e "${RED}No ${pkg}. Setting up ${pkg}.${NOCOLOR}" 
+        pkg install ${pkg} -y
+        if [ $? -ne 0 ]; then
+            echo -e "${RED}Failed to install ${pkg}.${NOCOLOR}"
+            exit 1
+        fi
     fi
 done
+
+# Check password and start countdown timer for 1 day (86400 seconds)
+check_password
+countdown 86400
+
 quickbms_check
