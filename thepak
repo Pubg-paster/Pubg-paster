@@ -7,36 +7,24 @@ echo "-----------------------"
 
 OUTPUT_DIR="/storage/emulated/0/PUBGPASTER/output"
 INPUT_DIR="/storage/emulated/0/PUBGPASTER/INPUT"
+TIME_LIMIT=180  # Time limit in seconds (3 minutes)
+PASSWORD="1234"  # Set your password here
+START_TIME_FILE="/storage/emulated/0/PUBGPASTER/start_time"
 
-# Create directories if they don't exist
-if [[ ! -d "$OUTPUT_DIR" ]]; then
-    mkdir -p "$OUTPUT_DIR"
-fi
-
-if [[ ! -d "$INPUT_DIR" ]]; then
-    mkdir -p "$INPUT_DIR"
-fi
-
-# Password protection
-PASSWORD="1234"
-while true; do
-    read -p "Enter password to unlock the script: " input_password
-    echo
-    if [[ "$input_password" == "$PASSWORD" ]]; then
-        break
-    else
-        echo "Incorrect password. Try again."
+# Function to create directories if they don't exist
+create_dir() {
+    if [[ ! -d "$1" ]]; then
+        mkdir -p "$1"
     fi
-done
+}
 
-# Timer-based access control (3 minutes)
-TIMER=180
-(sleep $TIMER && kill $$) &
+create_dir "$OUTPUT_DIR"
+create_dir "$INPUT_DIR"
 
 # Logging function
 log_action() {
     local LOG_DIR="/storage/emulated/0/PUBGPASTER/logs"
-    mkdir -p "$LOG_DIR"
+    create_dir "$LOG_DIR"
     echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" >> "$LOG_DIR/script.log"
 }
 
@@ -63,6 +51,25 @@ show_progress() {
         done
     done
 }
+
+# Function to check time limit
+check_time_limit() {
+    if [[ -f "$START_TIME_FILE" ]]; then
+        START_TIME=$(cat "$START_TIME_FILE")
+        CURRENT_TIME=$(date +%s)
+        ELAPSED_TIME=$((CURRENT_TIME - START_TIME))
+        if (( ELAPSED_TIME > TIME_LIMIT )); then
+            read -p "Enter password to continue: " input_password
+            if [[ "$input_password" != "$PASSWORD" ]]; then
+                handle_error "Incorrect password. Access denied."
+            fi
+        fi
+    else
+        date +%s > "$START_TIME_FILE"
+    fi
+}
+
+check_time_limit
 
 # Function to unpack files
 unpacking() {
@@ -145,26 +152,23 @@ function repack {
     done
 }
 
-# Main menu
-PS3="Please select an option: "
-options=("Unpack files" "Repack files" "Search text in output" "Clean up temporary files" "Quit")
-select opt in "${options[@]}"; do
-    case $opt in
-        "Unpack files")
-            unpack
-            ;;
-        "Repack files")
-            repack
-            ;;
-        "Search text in output")
-            TEXTsearch
-            ;;
-        "Clean up temporary files")
-            cleanup
-            ;;
-        "Quit")
-            break
-            ;;
-        *) echo "Invalid option. Try another one." ;;
+# Main menu function
+main_menu() {
+    echo "Main Menu"
+    echo "1. Unpack files"
+    echo "2. Repack files"
+    echo "3. Search in output"
+    echo "4. Clean up temporary files"
+    echo "5. Quit"
+    read -p "Enter your choice: " choice
+    case $choice in
+        1) unpack ;;
+        2) repack ;;
+        3) TEXTsearch ;;
+        4) cleanup ;;
+        5) exit ;;
+        *) echo "Invalid choice. Please try again." ;;
     esac
-done
+}
+
+main_menu
