@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 source etc/banner
+# Banner Add
 echo -e "executing: ${LIGHTGREEN} Pubg-paster${NOCOLOR}"
 echo "-----------------------"
 
@@ -47,6 +48,13 @@ show_progress() {
     done
 }
 
+# Function to set time limit
+set_time_limit() {
+    local time_limit=300  # 5 minutes in seconds
+    (sleep "$time_limit" && kill $$) &
+    log_action "Time limit set to $time_limit seconds"
+}
+
 # Function to unpack files
 unpacking() {
     show_progress &
@@ -55,6 +63,8 @@ unpacking() {
         kill $PROGRESS_PID
         echo "Unpacking successful!"
         log_action "Unpacking successful for $opt"
+        process_uasset
+        process_uexp
     else
         kill $PROGRESS_PID
         handle_error "Unpacking failed for $opt"
@@ -89,21 +99,6 @@ cleanup() {
     echo "Temporary files cleaned up."
     log_action "Temporary files cleaned up."
 }
-
-# Function to prompt for password after 5 minutes
-prompt_password_after_delay() {
-    sleep 300
-    read -p "Enter password: " input_password
-    if [[ "$input_password" == "1234" ]]; then
-        echo "Password correct."
-        log_action "Password validated successfully."
-    else
-        handle_error "Incorrect password."
-    fi
-}
-
-# Start the password prompt in the background
-prompt_password_after_delay &
 
 # Function to unpack files interactively
 function unpack {
@@ -142,3 +137,24 @@ function repack {
         fi
     done
 }
+
+# Function to process uasset files
+process_uasset() {
+    for file in "$OUTPUT_DIR"/*.uasset; do
+        # Add your processing logic here
+        echo "Processing $file"
+        log_action "Processing $file"
+    done
+}
+
+# Function to process uexp files
+process_uexp() {
+    for file in "$OUTPUT_DIR"/*.uexp; do
+        # Add your processing logic here
+        echo "Processing $file"
+        log_action "Processing $file"
+    done
+}
+
+# Set time limit to 5 minutes
+set_time_limit
