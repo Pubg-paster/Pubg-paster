@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+source etc/banner
+echo -e "executing: ${LIGHTGREEN} Pubg-paster${NOCOLOR}"
+echo "-----------------------"
+
+# Wait for 5 minutes (300 seconds)
+sleep 300
+
+# Function to prompt for password
+prompt_password() {
+    local correct_password="1234"
+    read -p "Enter password: " input_password
+    if [[ "$input_password" == "$correct_password" ]]; then
+        echo "Password correct."
+        log_action "Password validated successfully."
+    else
+        handle_error "Incorrect password."
+    fi
+}
+
+# Call the password prompt function
+prompt_password
+
+# Rest of your script...
