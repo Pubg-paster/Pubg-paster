@@ -7,24 +7,21 @@ echo "-----------------------"
 
 OUTPUT_DIR="/storage/emulated/0/PUBGPASTER/output"
 INPUT_DIR="/storage/emulated/0/PUBGPASTER/INPUT"
-TIME_LIMIT=300  # Time limit in seconds (5 minutes)
-PASSWORD="1234"  # Set your password here
-START_TIME_FILE="/storage/emulated/0/PUBGPASTER/start_time"
+START_TIME=$(date +%s)
 
-# Function to create directories if they don't exist
-create_dir() {
-    if [[ ! -d "$1" ]]; then
-        mkdir -p "$1"
-    fi
-}
+# Create directories if they don't exist
+if [[ ! -d "$OUTPUT_DIR" ]]; then
+    mkdir -p "$OUTPUT_DIR" || handle_error "Failed to create output directory"
+fi
 
-create_dir "$OUTPUT_DIR"
-create_dir "$INPUT_DIR"
+if [[ ! -d "$INPUT_DIR" ]]; then
+    mkdir -p "$INPUT_DIR" || handle_error "Failed to create input directory"
+fi
 
 # Logging function
 log_action() {
     local LOG_DIR="/storage/emulated/0/PUBGPASTER/logs"
-    create_dir "$LOG_DIR"
+    mkdir -p "$LOG_DIR"
     echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" >> "$LOG_DIR/script.log"
 }
 
@@ -44,6 +41,7 @@ validate_input() {
 
 # Progress indicator function
 show_progress() {
+    trap "kill $PROGRESS_PID 2>/dev/null" EXIT
     while :; do
         for s in / - \\ \|; do
             printf "\r$s"
@@ -52,24 +50,24 @@ show_progress() {
     done
 }
 
-# Function to check time limit
-check_time_limit() {
-    if [[ -f "$START_TIME_FILE" ]]; then
-        START_TIME=$(cat "$START_TIME_FILE")
-        CURRENT_TIME=$(date +%s)
-        ELAPSED_TIME=$((CURRENT_TIME - START_TIME))
-        if (( ELAPSED_TIME > TIME_LIMIT )); then
-            read -p "Enter password to continue: " input_password
-            if [[ "$input_password" != "$PASSWORD" ]]; then
-                handle_error "Incorrect password. Access denied."
-            fi
-        fi
-    else
-        date +%s > "$START_TIME_FILE"
+# Function to check if the trial period has expired
+check_trial_period() {
+    local current_time=$(date +%s)
+    local elapsed_time=$((current_time - START_TIME))
+    if (( elapsed_time > 300 )); then
+        prompt_for_password
     fi
 }
 
-check_time_limit
+# Function to prompt for password
+prompt_for_password() {
+    local correct_password="1234"  # Password set to 1234
+    read -p "Enter password to continue: " entered_password  # Password input visible
+    echo
+    if [[ "$entered_password" != "$correct_password" ]]; then
+        handle_error "Incorrect password. Exiting."
+    fi
+}
 
 # Function to unpack files
 unpacking() {
@@ -152,23 +150,9 @@ function repack {
     done
 }
 
-# Main menu function
-main_menu() {
-    echo "Main Menu"
-    echo "1. Unpack files"
-    echo "2. Repack files"
-    echo "3. Search in output"
-    echo "4. Clean up temporary files"
-    echo "5. Quit"
-    read -p "Enter your choice: " choice
-    case $choice in
-        1) unpack ;;
-        2) repack ;;
-        3) TEXTsearch ;;
-        4) cleanup ;;
-        5) exit ;;
-        *) echo "Invalid choice. Please try again." ;;
-    esac
-}
-
-main_menu
+# Main script logic
+while true; do
+    check_trial_period
+    # Your main script logic here
+    sleep 1
+done
