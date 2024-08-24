@@ -5,130 +5,130 @@ source etc/banner
 echo -e "executing: ${LIGHTGREEN} Pubg-paster${NOCOLOR}"
 echo "-----------------------"
 
-# Set the trial period duration in seconds (2 minutes = 120 seconds)
-TRIAL_DURATION=120
-# Set the trial password
-TRIAL_PASSWORD="1234"
-
-# File to store the start time
-START_TIME_FILE="/tmp/pubg_paster_start_time"
-
-# Check if the start time file exists
-if [[ ! -f "$START_TIME_FILE" ]]; then
-    # Record the start time
-    date +%s > "$START_TIME_FILE"
-fi
-
-# Read the start time
-start_time=$(cat "$START_TIME_FILE")
-current_time=$(date +%s)
-elapsed_time=$((current_time - start_time))
-
-# Check if the trial period has expired
-if (( elapsed_time > TRIAL_DURATION )); then
-    # Prompt the user for the password
-    read -p "Enter the trial password: " input_password
-    echo
-
-    # Validate the password
-    if [[ "$input_password" != "$TRIAL_PASSWORD" ]]; then
-        echo "Invalid password."
-        exit 1
-    fi
-fi
-
 OUTPUT_DIR="/storage/emulated/0/PUBGPASTER/output"
 INPUT_DIR="/storage/emulated/0/PUBGPASTER/INPUT"
+LOG_FILE="/storage/emulated/0/PUBGPASTER/log.txt"
+BACKUP_DIR="/storage/emulated/0/PUBGPASTER/backup"
 
 # Create directories if they don't exist
-if [[ ! -d "$OUTPUT_DIR" ]]; then
-    mkdir -p "$OUTPUT_DIR"
-fi
-
-if [[ ! -d "$INPUT_DIR" ]]; then
-    mkdir -p "$INPUT_DIR"
-fi
-
-# Function to unpack files
-unpacking () {
-  if qemu-i386 $PREFIX/share/quickbms/quickbms -9 -Q etc/tools.bms "$opt" "$OUTPUT_DIR"; then
-    echo "Unpacking successful!"
-  else
-    echo "Unpacking failed! Please check the file and try again."
-  fi
-}
-
-# Function to repack files
-repacking () {
-  if qemu-i386 $PREFIX/share/quickbms/quickbms -9 -w -r -r etc/tools.bms "$opt" "$OUTPUT_DIR"; then
-    echo "Repacking successful!"
-  else
-    echo "Repacking failed! Please check the file and try again."
-  fi
-}
-
-# Function to search within the output directory
-search_in_output () {
-  read -p "Enter the text to search for: " search_text
-  grep -R "$search_text" "$OUTPUT_DIR"
-}
-
-# Function to handle unpacking process
-function unpack {
-  prompt="Please select a file to unpack:"
-  options=( $(find "$INPUT_DIR" -name "*.pak") )
-
-  PS3="$prompt "
-  select opt in "${options[@]}" "Quit"; do 
-    if (( REPLY == 1 + ${#options[@]} )); then
-        exit
-    elif (( REPLY > 0 && REPLY <= ${#options[@]} )); then
-        echo "You picked $opt which is file $REPLY"
-        unpacking
-        break
-    else
-        echo "Invalid option. Try another one."
+for dir in "$OUTPUT_DIR" "$INPUT_DIR" "$BACKUP_DIR"; do
+    if [[ ! -d "$dir" ]]; then
+        mkdir -p "$dir" || { echo "Failed to create directory $dir"; exit 1; }
     fi
-  done
-}
-
-# Function to handle repacking process
-function repack {
-  prompt="Please select a file to repack:"
-  options=( $(find "$INPUT_DIR" -name "*.pak") )
-
-  PS3="$prompt "
-  select opt in "${options[@]}" "Quit"; do 
-    if (( REPLY == 1 + ${#options[@]} )); then
-        exit
-    elif (( REPLY > 0 && REPLY <= ${#options[@]} )); then
-        echo "You picked $opt which is file $REPLY"
-        repacking
-        break
-    else
-        echo "Invalid option. Try another one."
-    fi
-  done
-}
-
-# Main menu
-PS3='Please enter your choice: '
-options=("Unpack" "Repack" "Search in Output" "Quit")
-select opt in "${options[@]}"; do
-    case $opt in
-        "Unpack")
-            unpack
-            break
-            ;;
-        "Repack")
-            repack
-            ;;
-        "Search in Output")
-            search_in_output
-            ;;
-        "Quit")
-            break
-            ;;
-        *) echo "Invalid option $REPLY";;
-    esac
 done
+
+# Log actions with timestamp
+log_action() {
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" >> "$LOG_FILE"
+}
+
+# Show progress spinner
+show_progress() {
+    local pid=$!
+    local delay=0.1
+    local spinstr='⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏'
+    echo -n "Processing..."
+    while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
+        local temp=${spinstr#?}
+        printf " [%c]  " "$spinstr"
+        local spinstr=$temp${spinstr%"$temp"}
+        sleep $delay
+        printf "\b\b\b\b\b\b"
+    done
+    echo -e " ${LIGHTGREEN}Done!${NOCOLOR}"
+}
+
+# Validate .pak file
+validate_file() {
+    if [[ "$1" != *.pak ]]; then
+        echo "Invalid file type: $1"
+        log_action "Invalid file type: $1"
+        exit 1
+    fi
+}
+
+# Backup original file
+backup_file() {
+    cp "$1" "$BACKUP_DIR" || { echo "Failed to backup $1"; exit 1; }
+    log_action "Backup created for $1"
+}
+
+# Unpack files with timeout
+unpacking () {
+    validate_file "$opt"
+    backup_file "$opt"
+    timeout 300 qemu-i386 $PREFIX/share/quickbms/quickbms -9 -Q etc/tools.bms "$opt" "$OUTPUT_DIR" &
+    show_progress
+    if [ $? -eq 0 ]; then
+        echo "Unpacking successful!"
+        log_action "Unpacking successful for $opt"
+    else
+        echo "Unpacking failed or timed out!"
+        log_action "Unpacking failed or timed out for $opt"
+    fi
+}
+
+# Repack files with timeout
+repacking () {
+    validate_file "$opt"
+    timeout 300 qemu-i386 $PREFIX/share/quickbms/quickbms -9 -w -r -r etc/tools.bms "$opt" "$OUTPUT_DIR" &
+    show_progress
+    if [ $? -eq 0 ]; then
+        echo "Repacking successful!"
+        log_action "Repacking successful for $opt"
+    else
+        echo "Repacking failed or timed out!"
+        log_action "Repacking failed or timed out for $opt"
+    fi
+}
+
+# Search for text in output directory
+search_in_output () {
+    read -p "Enter the text to search for: " search_text
+    grep -R "$search_text" "$OUTPUT_DIR" || { echo "Search failed"; exit 1; }
+}
+
+# Cleanup temporary files
+cleanup() {
+    rm -rf "$OUTPUT_DIR"/*
+    log_action "Cleaned up output directory"
+}
+
+# Display help
+show_help() {
+    echo "Usage: $0 [options]"
+    echo "Options:"
+    echo "  unpack    Unpack a .pak file"
+    echo "  repack    Repack a .pak file"
+    echo "  search    Search for text in output directory"
+    echo "  cleanup   Clean up temporary files"
+    echo "  help      Show this help message"
+}
+
+# Function to unpack selected file
+function unpack {
+    prompt="Please select a file to unpack:"
+    options=( $(find "$INPUT_DIR" -name "*.pak") )
+
+    PS3="$prompt "
+    select opt in "${options[@]}" "Quit"; do 
+        if (( REPLY == 1 + ${#options[@]} )); then
+            exit
+        elif (( REPLY > 0 && REPLY <= ${#options[@]} )); then
+            echo "You picked $opt which is file $REPLY"
+            unpacking
+        else
+            echo "Invalid option. Please try again."
+        fi
+    done
+}
+
+# Main script logic
+case "$1" in
+    unpack) unpack ;;
+    repack) repacking ;;
+    search) search_in_output ;;
+    cleanup) cleanup ;;
+    help) show_help ;;
+    *) echo "Invalid option. Use 'help' to see available options." ;;
+esac
