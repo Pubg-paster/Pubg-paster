@@ -7,7 +7,7 @@ echo "-----------------------"
 
 OUTPUT_DIR="/storage/emulated/0/PUBGPASTER/output"
 INPUT_DIR="/storage/emulated/0/PUBGPASTER/INPUT"
-TIME_LIMIT=180  # Time limit in seconds (3 minutes)
+TIME_LIMIT=300  # Time limit in seconds (5 minutes)
 PASSWORD="1234"  # Set your password here
 START_TIME_FILE="/storage/emulated/0/PUBGPASTER/start_time"
 
