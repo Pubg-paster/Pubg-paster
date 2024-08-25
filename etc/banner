@@ -17,19 +17,11 @@ LIGHTBLUE='\033[1;34m'
 LIGHTPURPLE='\033[1;35m'
 LIGHTCYAN='\033[1;36m'
 WHITE='\033[1;37m'
-
-#!/bin/bash
-
-# Coloring
-NOCOLOR='\033[0m'
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-BLUE='\033[0;34m'
+BOLD='\033[1m'
 
 # Banner
 clear
-echo -e "${RED}🌸ꗥ～ꗥ🌸 𝐏𝐔𝐁𝐆-𝐏𝐀𝐒𝐓𝐄𝐑 🌸ꗥ～ꗥ🌸${NOCOLOR}"
+echo -e "${BOLD}${RED}🌸ꗥ～ꗥ🌸 𝐏𝐔𝐁𝐆-𝐏𝐀𝐒𝐓𝐄𝐑 🌸ꗥ～ꗥ🌸${NOCOLOR}"
 echo -e "          ${BLUE}by ĐⱤ₳J ${NOCOLOR}"
 echo -e "-----------------------"
-
-
+echo -e "${GREEN}Join our Telegram channel for updates: ${CYAN}https://t.me/+6dw6gTPZu0FiOGRl${NOCOLOR}"
