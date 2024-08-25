@@ -1,12 +1,24 @@
 #!/usr/bin/env bash
 
 source etc/banner
-# Banner Add
 echo -e "executing: ${LIGHTGREEN} Pubg-paster${NOCOLOR}"
 echo "-----------------------"
 
 OUTPUT_DIR="/storage/emulated/0/PUBGPASTER/output"
 INPUT_DIR="/storage/emulated/0/PUBGPASTER/INPUT"
+EXPIRATION_DATE=$(date -d "+1 day" '+%Y-%m-%d')
+
+# Function to check expiration date
+check_expiration() {
+    current_date=$(date '+%Y-%m-%d')
+    if [[ "$current_date" > "$EXPIRATION_DATE" ]]; then
+        echo "This script has expired. Please contact the developer for an updated version."
+        exit 1
+    fi
+}
+
+# Call the expiration check function at the start
+check_expiration
 
 # Create directories if they don't exist
 if [[ ! -d "$OUTPUT_DIR" ]]; then
@@ -46,13 +58,6 @@ show_progress() {
             sleep 0.1
         done
     done
-}
-
-# Function to set time limit
-set_time_limit() {
-    local time_limit=300  # 5 minutes in seconds
-    (sleep "$time_limit" && kill $$) &
-    log_action "Time limit set to $time_limit seconds"
 }
 
 # Function to unpack files
@@ -155,6 +160,3 @@ process_uexp() {
         log_action "Processing $file"
     done
 }
-
-# Set time limit to 5 minutes
-set_time_limit
