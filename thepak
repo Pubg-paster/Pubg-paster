@@ -1,24 +1,12 @@
 #!/usr/bin/env bash
 
 source etc/banner
+# Banner Add
 echo -e "executing: ${LIGHTGREEN} Pubg-paster${NOCOLOR}"
 echo "-----------------------"
 
 OUTPUT_DIR="/storage/emulated/0/PUBGPASTER/output"
 INPUT_DIR="/storage/emulated/0/PUBGPASTER/INPUT"
-EXPIRATION_DATE=$(date -d "+1 day" '+%Y-%m-%d')
-
-# Function to check expiration date
-check_expiration() {
-    current_date=$(date '+%Y-%m-%d')
-    if [[ "$current_date" > "$EXPIRATION_DATE" ]]; then
-        echo "This script has expired. Please contact the developer for an updated version."
-        exit 1
-    fi
-}
-
-# Call the expiration check function at the start
-check_expiration
 
 # Create directories if they don't exist
 if [[ ! -d "$OUTPUT_DIR" ]]; then
@@ -146,17 +134,83 @@ function repack {
 # Function to process uasset files
 process_uasset() {
     for file in "$OUTPUT_DIR"/*.uasset; do
-        # Add your processing logic here
         echo "Processing $file"
         log_action "Processing $file"
+        merge_uasset_files "$file"
+        # Add your additional uasset processing functions here
     done
 }
 
 # Function to process uexp files
 process_uexp() {
     for file in "$OUTPUT_DIR"/*.uexp; do
-        # Add your processing logic here
         echo "Processing $file"
         log_action "Processing $file"
+        decrypt_uexp_files "$file"
+        merge_uexp_files "$file"
+        de_merge_uexp_files "$file"
+        copy_uexp_name_to_uasset
+        # Add your additional uexp processing functions here
+    done
+}
+
+# Function to decrypt uexp files
+decrypt_uexp_files() {
+    for file in "$OUTPUT_DIR"/*.uexp; do
+        # Example command to decrypt
+        echo "Decrypting $file"
+        # Add your decryption logic here
+        log_action "Decrypted $file"
+    done
+}
+
+# Function to merge uexp files
+merge_uexp_files() {
+    output_file="$OUTPUT_DIR/merged.uexp"
+    cat "$OUTPUT_DIR"/*.uexp > "$output_file"
+    echo "Merged files into $output_file"
+    log_action "Merged files into $output_file"
+}
+
+# Function to de-merge uexp files
+de_merge_uexp_files() {
+    merged_file="$OUTPUT_DIR/merged.uexp"
+    output_dir="$OUTPUT_DIR/de_merged"
+    mkdir -p "$output_dir"
+
+    # Example logic to split the merged file
+    # This assumes you have a way to determine the boundaries of each original file
+    # For simplicity, let's assume each original file is of fixed size (e.g., 1MB)
+
+    file_size=1048576  # 1MB in bytes
+    split -b "$file_size" "$merged_file" "$output_dir/part_"
+
+    echo "De-merged files into $output_dir"
+    log_action "De-merged files from $merged_file into $output_dir"
+}
+
+# Function to merge uasset files
+merge_uasset_files() {
+    output_file="$OUTPUT_DIR/merged.uasset"
+    cat "$OUTPUT_DIR"/*.uasset > "$output_file"
+    echo "Merged files into $output_file"
+    log_action "Merged files into $output_file"
+}
+
+# Function to copy uexp name to uasset file
+copy_uexp_name_to_uasset() {
+    for uexp_file in "$OUTPUT_DIR"/*.uexp; do
+        uexp_name=$(basename "$uexp_file" .uexp)
+        uasset_file="$OUTPUT_DIR/$uexp_name.uasset"
+        
+        if [[ -f "$uasset_file" ]]; then
+            new_uasset_name="${uexp_name}_copied.uasset"
+            mv "$uasset_file" "$OUTPUT_DIR/$new_uasset_name"
+            echo "Renamed $uasset_file to $new_uasset_name"
+            log_action "Renamed $uasset_file to $new_uasset_name"
+        else
+            echo "No corresponding .uasset file found for $uexp_file"
+            log_action "No corresponding .uasset file found for $uexp_file"
+        fi
     done
 }
