@@ -8,7 +8,6 @@ echo "-----------------------"
 OUTPUT_DIR="/storage/emulated/0/PUBGPASTER/output"
 INPUT_DIR="/storage/emulated/0/PUBGPASTER/INPUT"
 
-# Create directories if they don't exist
 if [[ ! -d "$OUTPUT_DIR" ]]; then
     mkdir -p "$OUTPUT_DIR"
 fi
@@ -17,200 +16,144 @@ if [[ ! -d "$INPUT_DIR" ]]; then
     mkdir -p "$INPUT_DIR"
 fi
 
-# Logging function
-log_action() {
-    local LOG_DIR="/storage/emulated/0/PUBGPASTER/logs"
-    mkdir -p "$LOG_DIR"
-    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" >> "$LOG_DIR/script.log"
+unpacking () {
+  if qemu-i386 $PREFIX/share/quickbms/quickbms -9 -Q etc/tools.bms "$opt" "$OUTPUT_DIR"; then
+    echo "Unpacking successful!"
+  else
+    echo "Unpacking failed!"
+  fi
 }
 
-# Error handling function
-handle_error() {
-    echo "An error occurred: $1"
-    log_action "Error: $1"
-    exit 1
+repacking () {
+  if qemu-i386 $PREFIX/share/quickbms/quickbms -9 -w -r -r etc/tools.bms "$opt" "$OUTPUT_DIR"; then
+    echo "Repacking successful!"
+  else
+    echo "Repacking failed!"
+  fi
 }
 
-# Validate input function
-validate_input() {
-    if [[ -z "$1" ]]; then
-        handle_error "Input cannot be empty. Please provide a valid input."
-    fi
+search_in_output () {
+  read -p "Enter the text to search for: " search_text
+  grep -R "$search_text" "$OUTPUT_DIR"
 }
 
-# Progress indicator function
-show_progress() {
-    while :; do
-        for s in / - \\ \|; do
-            printf "\r$s"
-            sleep 0.1
-        done
-    done
-}
-
-# Function to unpack files
-unpacking() {
-    show_progress &
-    PROGRESS_PID=$!
-    if qemu-i386 $PREFIX/share/quickbms/quickbms -9 -Q etc/tools.bms "$opt" "$OUTPUT_DIR"; then
-        kill $PROGRESS_PID
-        echo "Unpacking successful!"
-        log_action "Unpacking successful for $opt"
-        process_uasset
-        process_uexp
-    else
-        kill $PROGRESS_PID
-        handle_error "Unpacking failed for $opt"
-    fi
-}
-
-# Function to repack files
-repacking() {
-    show_progress &
-    PROGRESS_PID=$!
-    if qemu-i386 $PREFIX/share/quickbms/quickbms -9 -w -r -r etc/tools.bms "$opt" "$OUTPUT_DIR"; then
-        kill $PROGRESS_PID
-        echo "Repacking successful!"
-        log_action "Repacking successful for $opt"
-    else
-        kill $PROGRESS_PID
-        handle_error "Repacking failed for $opt"
-    fi
-}
-
-# Function to search in output
-TEXTsearch() {
-    read -p "Enter the text to search for: " search_text
-    validate_input "$search_text"
-    grep -R "$search_text" "$OUTPUT_DIR"
-    log_action "Search performed for text: $search_text"
-}
-
-# Function to clean up temporary files
 cleanup() {
-    rm -rf "$OUTPUT_DIR/tmp"
-    echo "Temporary files cleaned up."
-    log_action "Temporary files cleaned up."
+  rm -rf "$OUTPUT_DIR"/*
+  echo "Cleanup successful!"
 }
 
-# Function to unpack files interactively
-function unpack {
-    prompt="Please select a file to unpack:"
-    options=( $(find "$INPUT_DIR" -name "*.pak") )
-
-    PS3="$prompt "
-    select opt in "${options[@]}" "Quit"; do 
-        if (( REPLY == 1 + ${#options[@]} )); then
-            exit
-        elif (( REPLY > 0 && REPLY <= ${#options[@]} )); then
-            echo "You picked $opt which is file $REPLY"
-            unpacking
-            break
-        else
-            echo "Invalid option. Try another one."
-        fi
-    done
-}
-
-# Function to repack files interactively
-function repack {
-    prompt="Please select a file to repack:"
-    options=( $(find "$INPUT_DIR" -name "*.pak") )
-
-    PS3="$prompt "
-    select opt in "${options[@]}" "Quit"; do 
-        if (( REPLY == 1 + ${#options[@]} )); then
-            exit
-        elif (( REPLY > 0 && REPLY <= ${#options[@]} )); then
-            echo "You picked $opt which is file $REPLY"
-            repacking
-            break
-        else
-            echo "Invalid option. Try another one."
-        fi
-    done
-}
-
-# Function to process uasset files
 process_uasset() {
-    for file in "$OUTPUT_DIR"/*.uasset; do
-        echo "Processing $file"
-        log_action "Processing $file"
-        merge_uasset_files "$file"
-        # Add your additional uasset processing functions here
-    done
+  echo "Processing .uasset files..."
+  # Add your processing logic here
 }
 
-# Function to process uexp files
 process_uexp() {
-    for file in "$OUTPUT_DIR"/*.uexp; do
-        echo "Processing $file"
-        log_action "Processing $file"
-        decrypt_uexp_files "$file"
-        merge_uexp_files "$file"
-        de_merge_uexp_files "$file"
-        copy_uexp_name_to_uasset
-        # Add your additional uexp processing functions here
-    done
+  echo "Processing .uexp files..."
+  # Add your processing logic here
 }
 
-# Function to decrypt uexp files
-decrypt_uexp_files() {
-    for file in "$OUTPUT_DIR"/*.uexp; do
-        # Example command to decrypt
-        echo "Decrypting $file"
-        # Add your decryption logic here
-        log_action "Decrypted $file"
-    done
-}
-
-# Function to merge uexp files
-merge_uexp_files() {
-    output_file="$OUTPUT_DIR/merged.uexp"
-    cat "$OUTPUT_DIR"/*.uexp > "$output_file"
-    echo "Merged files into $output_file"
-    log_action "Merged files into $output_file"
-}
-
-# Function to de-merge uexp files
-de_merge_uexp_files() {
-    merged_file="$OUTPUT_DIR/merged.uexp"
-    output_dir="$OUTPUT_DIR/de_merged"
-    mkdir -p "$output_dir"
-
-    # Example logic to split the merged file
-    # This assumes you have a way to determine the boundaries of each original file
-    # For simplicity, let's assume each original file is of fixed size (e.g., 1MB)
-
-    file_size=1048576  # 1MB in bytes
-    split -b "$file_size" "$merged_file" "$output_dir/part_"
-
-    echo "De-merged files into $output_dir"
-    log_action "De-merged files from $merged_file into $output_dir"
-}
-
-# Function to merge uasset files
 merge_uasset_files() {
-    output_file="$OUTPUT_DIR/merged.uasset"
-    cat "$OUTPUT_DIR"/*.uasset > "$output_file"
-    echo "Merged files into $output_file"
-    log_action "Merged files into $output_file"
+  echo "Merging .uasset files..."
+  # Placeholder for merging .uasset files
 }
 
-# Function to copy uexp name to uasset file
-copy_uexp_name_to_uasset() {
-    for uexp_file in "$OUTPUT_DIR"/*.uexp; do
-        uexp_name=$(basename "$uexp_file" .uexp)
-        uasset_file="$OUTPUT_DIR/$uexp_name.uasset"
-        
-        if [[ -f "$uasset_file" ]]; then
-            new_uasset_name="${uexp_name}_copied.uasset"
-            mv "$uasset_file" "$OUTPUT_DIR/$new_uasset_name"
-            echo "Renamed $uasset_file to $new_uasset_name"
-            log_action "Renamed $uasset_file to $new_uasset_name"
-        else
-            echo "No corresponding .uasset file found for $uexp_file"
-            log_action "No corresponding .uasset file found for $uexp_file"
-        fi
-    done
+decrypt_uexp_files() {
+  echo "Decrypting .uexp files..."
+  # Placeholder for decrypting .uexp files
 }
+
+merge_uexp_files() {
+  echo "Merging .uexp files..."
+  # Placeholder for merging .uexp files
+}
+
+de_merge_uexp_files() {
+  echo "Demerging .uexp files..."
+  # Placeholder for demerging .uexp files
+}
+
+copy_uexp_name_to_uasset() {
+  echo "Copying .uexp names to .uasset..."
+  # Placeholder for copying .uexp names to .uasset
+}
+
+function unpack {
+  prompt="Please select a file to unpack:"
+  options=( $(find "$INPUT_DIR" -name "*.pak") )
+
+  PS3="$prompt "
+  select opt in "${options[@]}" "Quit"; do 
+    if (( REPLY == 1 + ${#options[@]} )); then
+        exit
+    elif (( REPLY > 0 && REPLY <= ${#options[@]} )); then
+        echo "You picked $opt which is file $REPLY"
+        unpacking
+        break
+    else
+        echo "Invalid option. Try another one."
+    fi
+  done
+}
+
+function repack {
+  prompt="Please select a file to repack:"
+  options=( $(find "$INPUT_DIR" -name "*.pak") )
+
+  PS3="$prompt "
+  select opt in "${options[@]}" "Quit"; do 
+    if (( REPLY == 1 + ${#options[@]} )); then
+        exit
+    elif (( REPLY > 0 && REPLY <= ${#options[@]} )); then
+        echo "You picked $opt which is file $REPLY"
+        repacking
+        break
+    else
+        echo "Invalid option. Try another one."
+    fi
+  done
+}
+
+PS3='Please enter your choice: '
+options=("Unpack" "Repack" "Search in Output" "Cleanup" "Process .uasset" "Process .uexp" "Merge .uasset Files" "Decrypt .uexp Files" "Merge .uexp Files" "Demerge .uexp Files" "Copy .uexp Name to .uasset" "Quit")
+select opt in "${options[@]}"; do
+    case $opt in
+        "Unpack")
+            unpack
+            break
+            ;;
+        "Repack")
+            repack
+            ;;
+        "Search in Output")
+            search_in_output
+            ;;
+        "Cleanup")
+            cleanup
+            ;;
+        "Process .uasset")
+            process_uasset
+            ;;
+        "Process .uexp")
+            process_uexp
+            ;;
+        "Merge .uasset Files")
+            merge_uasset_files
+            ;;
+        "Decrypt .uexp Files")
+            decrypt_uexp_files
+            ;;
+        "Merge .uexp Files")
+            merge_uexp_files
+            ;;
+        "Demerge .uexp Files")
+            de_merge_uexp_files
+            ;;
+        "Copy .uexp Name to .uasset")
+            copy_uexp_name_to_uasset
+            ;;
+        "Quit")
+            break
+            ;;
+        *) echo "Invalid option $REPLY";;
+    esac
+done
