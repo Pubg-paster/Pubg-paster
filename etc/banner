@@ -19,9 +19,21 @@ LIGHTCYAN='\033[1;36m'
 WHITE='\033[1;37m'
 BOLD='\033[1m'
 
-# Banner
+# Banner Animation
 clear
 echo -e "${BOLD}${RED}🌸ꗥ～ꗥ🌸 𝐏𝐔𝐁𝐆-𝐏𝐀𝐒𝐓𝐄𝐑 🌸ꗥ～ꗥ🌸${NOCOLOR}"
+sleep 0.5
 echo -e "          ${BLUE}by ĐⱤ₳J ${NOCOLOR}"
+sleep 0.5
 echo -e "-----------------------"
+sleep 0.5
 echo -e "${GREEN}Join our Telegram channel for updates: ${CYAN}https://t.me/+6dw6gTPZu0FiOGRl${NOCOLOR}"
+sleep 0.5
+
+# Loading Animation
+echo -ne "${YELLOW}Loading"
+for i in {1..5}; do
+    echo -ne "."
+    sleep 0.5
+done
+echo -e "${NOCOLOR}"
