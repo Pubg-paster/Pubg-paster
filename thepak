@@ -1,159 +1,40 @@
 #!/usr/bin/env bash
-
-source etc/banner
-# Banner Add
-echo -e "executing: ${LIGHTGREEN} Pubg-paster${NOCOLOR}"
-echo "-----------------------"
-
-OUTPUT_DIR="/storage/emulated/0/PUBGPASTER/output"
-INPUT_DIR="/storage/emulated/0/PUBGPASTER/INPUT"
-
-if [[ ! -d "$OUTPUT_DIR" ]]; then
-    mkdir -p "$OUTPUT_DIR"
-fi
-
-if [[ ! -d "$INPUT_DIR" ]]; then
-    mkdir -p "$INPUT_DIR"
-fi
-
-unpacking () {
-  if qemu-i386 $PREFIX/share/quickbms/quickbms -9 -Q etc/tools.bms "$opt" "$OUTPUT_DIR"; then
-    echo "Unpacking successful!"
-  else
-    echo "Unpacking failed!"
-  fi
-}
-
-repacking () {
-  if qemu-i386 $PREFIX/share/quickbms/quickbms -9 -w -r -r etc/tools.bms "$opt" "$OUTPUT_DIR"; then
-    echo "Repacking successful!"
-  else
-    echo "Repacking failed!"
-  fi
-}
-
-search_in_output () {
-  read -p "Enter the text to search for: " search_text
-  grep -R "$search_text" "$OUTPUT_DIR"
-}
-
-cleanup() {
-  rm -rf "$OUTPUT_DIR"/*
-  echo "Cleanup successful!"
-}
-
-process_uasset() {
-  echo "Processing .uasset files..."
-  # Add your processing logic here
-}
-
-process_uexp() {
-  echo "Processing .uexp files..."
-  # Add your processing logic here
-}
-
-merge_uasset_files() {
-  echo "Merging .uasset files..."
-  # Placeholder for merging .uasset files
-}
-
-decrypt_uexp_files() {
-  echo "Decrypting .uexp files..."
-  # Placeholder for decrypting .uexp files
-}
-
-merge_uexp_files() {
-  echo "Merging .uexp files..."
-  # Placeholder for merging .uexp files
-}
-
-de_merge_uexp_files() {
-  echo "Demerging .uexp files..."
-  # Placeholder for demerging .uexp files
-}
-
-copy_uexp_name_to_uasset() {
-  echo "Copying .uexp names to .uasset..."
-  # Placeholder for copying .uexp names to .uasset
-}
-
-function unpack {
-  prompt="Please select a file to unpack:"
-  options=( $(find "$INPUT_DIR" -name "*.pak") )
-
-  PS3="$prompt "
-  select opt in "${options[@]}" "Quit"; do 
-    if (( REPLY == 1 + ${#options[@]} )); then
-        exit
-    elif (( REPLY > 0 && REPLY <= ${#options[@]} )); then
-        echo "You picked $opt which is file $REPLY"
-        unpacking
-        break
-    else
-        echo "Invalid option. Try another one."
-    fi
-  done
-}
-
-function repack {
-  prompt="Please select a file to repack:"
-  options=( $(find "$INPUT_DIR" -name "*.pak") )
-
-  PS3="$prompt "
-  select opt in "${options[@]}" "Quit"; do 
-    if (( REPLY == 1 + ${#options[@]} )); then
-        exit
-    elif (( REPLY > 0 && REPLY <= ${#options[@]} )); then
-        echo "You picked $opt which is file $REPLY"
-        repacking
-        break
-    else
-        echo "Invalid option. Try another one."
-    fi
-  done
-}
-
-PS3='Please enter your choice: '
-options=("Unpack" "Repack" "Search in Output" "Cleanup" "Process .uasset" "Process .uexp" "Merge .uasset Files" "Decrypt .uexp Files" "Merge .uexp Files" "Demerge .uexp Files" "Copy .uexp Name to .uasset" "Quit")
-select opt in "${options[@]}"; do
-    case $opt in
-        "Unpack")
-            unpack
-            break
-            ;;
-        "Repack")
-            repack
-            ;;
-        "Search in Output")
-            search_in_output
-            ;;
-        "Cleanup")
-            cleanup
-            ;;
-        "Process .uasset")
-            process_uasset
-            ;;
-        "Process .uexp")
-            process_uexp
-            ;;
-        "Merge .uasset Files")
-            merge_uasset_files
-            ;;
-        "Decrypt .uexp Files")
-            decrypt_uexp_files
-            ;;
-        "Merge .uexp Files")
-            merge_uexp_files
-            ;;
-        "Demerge .uexp Files")
-            de_merge_uexp_files
-            ;;
-        "Copy .uexp Name to .uasset")
-            copy_uexp_name_to_uasset
-            ;;
-        "Quit")
-            break
-            ;;
-        *) echo "Invalid option $REPLY";;
-    esac
-done
+eval $(echo 'IyEvdXNyL2Jpbi9lbnYgYmFzaAoKc291cmNlIGV0Yy9iYW5uZXIKIyBCYW5uZXIgQWRkCmVjaG8g
+LWUgImV4ZWN1dGluZzogJHtMSUdIVEdSRUVOfSBQdWJnLXBhc3RlciR7Tk9DT0xPUn0iCmVjaG8g
+Ii0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tIgoKT1VUUFVUX0RJUj0iL3N0b3JhZ2UvZW11bGF0ZWQv
+MC9QVUJHUEFTVEVSL291dHB1dCIKSU5QVVRfRElSPSIvc3RvcmFnZS9lbXVsYXRlZC8wL1BVQkdQ
+QVNURVIvSU5QVVQiCgppZiBbWyAhIC1kICIkT1VUUFVUX0RJUiIgXV07IHRoZW4KICAgIG1rZGly
+IC1wICIkT1VUUFVUX0RJUiIKZmkKCmlmIFtbICEgLWQgIiRJTlBVVF9ESVIiIF1dOyB0aGVuCiAg
+ICBta2RpciAtcCAiJElOUFVUX0RJUiIKZmkKCnVucGFja2luZyAoKSB7CiAgaWYgcWVtdS1pMzg2
+ICRQUkVGSVgvc2hhcmUvcXVpY2tibXMvcXVpY2tibXMgLTkgLVEgZXRjL3Rvb2xzLmJtcyAiJG9w
+dCIgIiRPVVRQVVRfRElSIjsgdGhlbgogICAgZWNobyAiVW5wYWNraW5nIHN1Y2Nlc3NmdWwhIgog
+IGVsc2UKICAgIGVjaG8gIlVucGFja2luZyBmYWlsZWQhIgogIGZpCn0KCnJlcGFja2luZyAoKSB7
+CiAgaWYgcWVtdS1pMzg2ICRQUkVGSVgvc2hhcmUvcXVpY2tibXMvcXVpY2tibXMgLTkgLXcgLXIg
+LXIgZXRjL3Rvb2xzLmJtcyAiJG9wdCIgIiRPVVRQVVRfRElSIjsgdGhlbgogICAgZWNobyAiUmVw
+YWNraW5nIHN1Y2Nlc3NmdWwhIgogIGVsc2UKICAgIGVjaG8gIlJlcGFja2luZyBmYWlsZWQhIgog
+IGZpCn0KCnNlYXJjaF9pbl9vdXRwdXQgKCkgewogIHJlYWQgLXAgIkVudGVyIHRoZSB0ZXh0IHRv
+IHNlYXJjaCBmb3I6ICIgc2VhcmNoX3RleHQKICBncmVwIC1SICIkc2VhcmNoX3RleHQiICIkT1VU
+UFVUX0RJUiIKfQoKZnVuY3Rpb24gdW5wYWNrIHsKICBwcm9tcHQ9IlBsZWFzZSBzZWxlY3QgYSBm
+aWxlIHRvIHVucGFjazoiCiAgb3B0aW9ucz0oICQoZmluZCAiJElOUFVUX0RJUiIgLW5hbWUgIiou
+cGFrIikgKQoKICBQUzM9IiRwcm9tcHQgIgogIHNlbGVjdCBvcHQgaW4gIiR7b3B0aW9uc1tAXX0i
+ICJRdWl0IjsgZG8gCiAgICBpZiAoKCBSRVBMWSA9PSAxICsgJHsjb3B0aW9uc1tAXX0gKSk7IHRo
+ZW4KICAgICAgICBleGl0CiAgICBlbGlmICgoIFJFUExZID4gMCAmJiBSRVBMWSA8PSAkeyNvcHRp
+b25zW0BdfSApKTsgdGhlbgogICAgICAgIGVjaG8gIllvdSBwaWNrZWQgJG9wdCB3aGljaCBpcyBm
+aWxlICRSRVBMWSIKICAgICAgICB1bnBhY2tpbmcKICAgICAgICBicmVhawogICAgZWxzZQogICAg
+ICAgIGVjaG8gIkludmFsaWQgb3B0aW9uLiBUcnkgYW5vdGhlciBvbmUuIgogICAgZmkKICBkb25l
+Cn0KCmZ1bmN0aW9uIHJlcGFjayB7CiAgcHJvbXB0PSJQbGVhc2Ugc2VsZWN0IGEgZmlsZSB0byBy
+ZXBhY2s6IgogIG9wdGlvbnM9KCAkKGZpbmQgIiRJTlBVVF9ESVIiIC1uYW1lICIqLnBhayIpICkK
+CiAgUFMzPSIkcHJvbXB0ICIKICBzZWxlY3Qgb3B0IGluICIke29wdGlvbnNbQF19IiAiUXVpdCI7
+IGRvIAogICAgaWYgKCggUkVQTFkgPT0gMSArICR7I29wdGlvbnNbQF19ICkpOyB0aGVuCiAgICAg
+ICAgZXhpdAogICAgZWxpZiAoKCBSRVBMWSA+IDAgJiYgUkVQTFkgPD0gJHsjb3B0aW9uc1tAXX0g
+KSk7IHRoZW4KICAgICAgICBlY2hvICJZb3UgcGlja2VkICRvcHQgd2hpY2ggaXMgZmlsZSAkUkVQ
+TFkiCiAgICAgICAgcmVwYWNraW5nCiAgICAgICAgYnJlYWsKICAgIGVsc2UKICAgICAgICBlY2hv
+ICJJbnZhbGlkIG9wdGlvbi4gVHJ5IGFub3RoZXIgb25lLiIKICAgIGZpCiAgZG9uZQp9CgpQUzM9
+J1BsZWFzZSBlbnRlciB5b3VyIGNob2ljZTogJwpvcHRpb25zPSgiVW5wYWNrIiAiUmVwYWNrIiAi
+U2VhcmNoIGluIE91dHB1dCIgIlF1aXQiKQpzZWxlY3Qgb3B0IGluICIke29wdGlvbnNbQF19Ijsg
+ZG8KICAgIGNhc2UgJG9wdCBpbgogICAgICAgICJVbnBhY2siKQogICAgICAgICAgICB1bnBhY2sK
+ICAgICAgICAgICAgYnJlYWsKICAgICAgICAgICAgOzsKICAgICAgICAiUmVwYWNrIikKICAgICAg
+ICAgICAgcmVwYWNrCiAgICAgICAgICAgIDs7CiAgICAgICAgIlNlYXJjaCBpbiBPdXRwdXQiKQog
+ICAgICAgICAgICBzZWFyY2hfaW5fb3V0cHV0CiAgICAgICAgICAgIDs7CiAgICAgICAgIlF1aXQi
+KQogICAgICAgICAgICBicmVhawogICAgICAgICAgICA7OwogICAgICAgICopIGVjaG8gIkludmFs
+aWQgb3B0aW9uICRSRVBMWSI7OwogICAgZXNhYwpkb25lCg==' | base64 --decode)
