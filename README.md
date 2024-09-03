@@ -9,9 +9,18 @@ This PAKtool is created to modify the PUBG Mobile PAK file.
 2. Open the Termux App and wait for the installation process,
 3. Enter This Command:
 ```
+
 termux-setup-storage
 
-pkg update && pkg upgrade
+
+
+pkg update
+
+
+
+pkg upgrade
+
+
 
 pkg install git
 
