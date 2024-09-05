@@ -1,1 +1,117 @@
+#!/usr/bin/env bash
 
+# Define the allowed date (format: YYYY-MM-DD)
+ALLOWED_DATE="2024-09-05" # Set this to the desired date
+
+# Get the current date
+CURRENT_DATE=$(date +%Y-%m-%d)
+
+# Check if the current date matches the allowed date
+if [[ "$CURRENT_DATE" != "$ALLOWED_DATE" ]]; then
+    echo "This script can only be executed on $ALLOWED_DATE. Today is $CURRENT_DATE."
+    exit 1
+fi
+
+source etc/banner
+# Banner Add
+echo -e "executing: ${LIGHTGREEN} Pubg-paster${NOCOLOR}"
+echo "-----------------------"
+
+OUTPUT_DIR="/storage/emulated/0/PUBGPASTER/output"
+INPUT_DIR="/storage/emulated/0/PUBGPASTER/INPUT"
+
+if [[ ! -d "$OUTPUT_DIR" ]]; then
+    mkdir -p "$OUTPUT_DIR"
+fi
+
+if [[ ! -d "$INPUT_DIR" ]]; then
+    mkdir -p "$INPUT_DIR"
+fi
+
+unpacking () {
+  if qemu-i386 $PREFIX/share/quickbms/quickbms -9 -Q etc/tools.bms "$opt" "$OUTPUT_DIR"; then
+    echo "Unpacking successful!"
+  else
+    echo "Unpacking failed!"
+  fi
+}
+
+repacking () {
+  if qemu-i386 $PREFIX/share/quickbms/quickbms -9 -w -r -r etc/tools.bms "$opt" "$OUTPUT_DIR"; then
+    echo "Repacking successful!"
+  else
+    echo "Repacking failed!"
+  fi
+}
+
+function unpack {
+  prompt="Please select a file to unpack:"
+  options=( $(find "$INPUT_DIR" -name "*.pak") )
+
+  PS3="$prompt "
+  select opt in "${options[@]}" "Quit"; do 
+    if (( REPLY == 1 + ${#options[@]} )); then
+        exit
+    elif (( REPLY > 0 && REPLY <= ${#options[@]} )); then
+        echo "You picked $opt which is file $REPLY"
+        unpacking
+        break
+    else
+        echo "Invalid option. Try another one."
+    fi
+  done
+}
+
+function repack {
+  prompt="Please select a file to repack:"
+  options=( $(find "$INPUT_DIR" -name "*.pak") )
+
+  PS3="$prompt "
+  select opt in "${options[@]}" "Quit"; do 
+    if (( REPLY == 1 + ${#options[@]} )); then
+        exit
+    elif (( REPLY > 0 && REPLY <= ${#options[@]} )); then
+        echo "You picked $opt which is file $REPLY"
+        repacking
+        break
+    else
+         echo "Invalid option. Try another one."
+    fi
+  done
+}
+
+# Function to add a user with a predefined username and password
+add_user() {
+  username="Pubg-paster"
+  password="01792"
+  sudo useradd -m -p "$(openssl passwd -1 $password)" $username
+  if [[ $? -eq 0 ]]; then
+    echo "User $username added successfully!"
+  else
+    echo "Failed to add user $username."
+  fi
+}
+
+PS3='Please enter your choice: '
+options=("Unpack" "Repack" "Add User" "Quit")
+select opt in "${options[@]}"; do
+    case $opt in
+        "Unpack")
+            unpack
+            ;;
+        "Repack")
+            repack
+            ;;
+        "Add User")
+            add_user
+            ;;
+        "Quit")
+            break
+            ;;
+        *) echo "Invalid option $REPLY";;
+    esac
+done
+        
+        
+        
+        
