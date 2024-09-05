@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Define the allowed date (format: YYYY-MM-DD)
-ALLOWED_DATE="2024-09-05" # Set this to the desired date
+ALLOWED_DATE="2024-09-06" # Set this to the desired date
 
 # Get the current date
 CURRENT_DATE=$(date +%Y-%m-%d)
