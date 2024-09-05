@@ -75,35 +75,35 @@ function repack {
         repacking
         break
     else
-         echo "Invalid option. Try another one."
+        echo "Invalid option. Try another one."
     fi
   done
 }
 
-# Function to add a user with a predefined username and password
-add_user() {
-  username="Pubg-paster"
-  password="01792"
-  sudo useradd -m -p "$(openssl passwd -1 $password)" $username
-  if [[ $? -eq 0 ]]; then
-    echo "User $username added successfully!"
+# Function to check login password
+check_password() {
+  read -p "Enter password: " input_password
+  if [[ "$input_password" == "01792" ]]; then
+    echo "Password correct. Access granted."
   else
-    echo "Failed to add user $username."
+    echo "Incorrect password. Access denied."
+    exit 1
   fi
 }
 
+# Check password before proceeding
+check_password
+
 PS3='Please enter your choice: '
-options=("Unpack" "Repack" "Add User" "Quit")
+options=("Unpack" "Repack" "Quit")
 select opt in "${options[@]}"; do
     case $opt in
         "Unpack")
             unpack
+            break
             ;;
         "Repack")
             repack
-            ;;
-        "Add User")
-            add_user
             ;;
         "Quit")
             break
@@ -111,7 +111,3 @@ select opt in "${options[@]}"; do
         *) echo "Invalid option $REPLY";;
     esac
 done
-        
-        
-        
-        
