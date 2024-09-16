@@ -1,4 +1,4 @@
-# PubgPAKTOOL
+no# PubgPAKTOOL
 Hi..this is my Paktool project for pubg obb
 # PUBG-PASTER 
 
@@ -11,17 +11,8 @@ This PAKtool is created to modify the PUBG Mobile PAK file.
 ```
 
 termux-setup-storage
-
-
-
 pkg update
-
-
-
 pkg upgrade
-
-
-
 pkg install git
 
 ```
