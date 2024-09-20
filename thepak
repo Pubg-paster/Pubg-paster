@@ -14,7 +14,7 @@ PINK='\033[38;5;213m' # Pink
 NOCOLOR='\033[0m' # No Color
 
 # Banner Add
-echo -e "${PINK}executing: Pubg-paster${NOCOLOR}"
+echo -e "${GREEN}executing: ${PURPLE}Pubg-paster${NOCOLOR}"
 echo "-----------------------"
 
 # Define number of days for expiration and extension
