@@ -19,7 +19,7 @@ echo "-----------------------"
 
 # Define number of days for expiration and extension
 DAYS_TO_EXPIRE=1
-EXTENSION_DAYS=2
+EXTENSION_DAYS=1
 PASSWORD="173314"
 INSTALLATION_ID_FILE="$HOME/.script_id"
 INSTALLATION_DATE_FILE="$HOME/installation_date.txt"
