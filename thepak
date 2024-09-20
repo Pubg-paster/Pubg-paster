@@ -1,1 +1,224 @@
-a
+#!/usr/bin/env bash
+
+source etc/banner
+
+# Colors Definition
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+LIGHTGREEN='\033[0;92m'
+PURPLE='\033[0;35m'
+ORANGE='\033[38;5;208m' # Orange
+PINK='\033[38;5;213m' # Pink
+NOCOLOR='\033[0m' # No Color
+
+# Banner Add
+echo -e "${PINK}executing: Pubg-paster${NOCOLOR}"
+echo "-----------------------"
+
+# Define number of days for expiration and extension
+DAYS_TO_EXPIRE=1
+EXTENSION_DAYS=2
+PASSWORD="173314"
+INSTALLATION_ID_FILE="$HOME/.script_id"
+INSTALLATION_DATE_FILE="$HOME/installation_date.txt"
+UNIQUE_ID_FILE="$HOME/.unique_id"
+
+# Generate a unique identifier
+generate_unique_id() {
+    echo "UNIQUE-ID-$(date +%s)"
+}
+
+# Function to set installation ID
+set_installation_id() {
+    UNIQUE_ID=$(generate_unique_id)
+    echo "$UNIQUE_ID" > "$INSTALLATION_ID_FILE"
+    chmod 555 "$INSTALLATION_ID_FILE"
+    echo "$UNIQUE_ID" > "$UNIQUE_ID_FILE"
+    chmod 555 "$UNIQUE_ID_FILE"
+}
+
+# Function to check installation ID
+check_installation_id() {
+    if [[ ! -f "$INSTALLATION_ID_FILE" ]]; then
+        set_installation_id
+        echo -e "${YELLOW}Installation ID set.${NOCOLOR}"
+        exit 0
+    fi
+
+    if [[ ! -r "$INSTALLATION_ID_FILE" || ! -r "$UNIQUE_ID_FILE" ]]; then
+        echo -e "${RED}Permission denied. Cannot read necessary files.${NOCOLOR}"
+        exit 1
+    fi
+
+    CURRENT_ID=$(cat "$INSTALLATION_ID_FILE" 2>/dev/null)
+    UNIQUE_ID=$(cat "$UNIQUE_ID_FILE" 2>/dev/null)
+
+    if [[ "$CURRENT_ID" != "$UNIQUE_ID" ]]; then
+        echo -e "${RED}Script cannot be used. Installation ID mismatch.${NOCOLOR}"
+        exit 1
+    fi
+}
+
+# Function to set installation date
+set_installation_date() {
+    echo "$(date +%F)" > "$INSTALLATION_DATE_FILE"
+    chmod 555 "$INSTALLATION_DATE_FILE"
+}
+
+# Function to check expiration
+check_expiration() {
+    if [[ ! -f "$INSTALLATION_DATE_FILE" ]]; then
+        set_installation_date
+        echo -e "${YELLOW}Installation date set.${NOCOLOR}"
+        exit 0
+    fi
+
+    if [[ ! -r "$INSTALLATION_DATE_FILE" ]]; then
+        echo -e "${RED}Permission denied. Cannot read installation date file.${NOCOLOR}"
+        exit 1
+    fi
+
+    CREATION_DATE=$(cat "$INSTALLATION_DATE_FILE" 2>/dev/null)
+    TODAY_DATE=$(date +%F)
+    EXPIRATION_DATE=$(date -d "$CREATION_DATE + $DAYS_TO_EXPIRE days" +%F)
+    EXTENSION_DATE=$(date -d "$EXPIRATION_DATE + $EXTENSION_DAYS days" +%F)
+
+    if [[ $(date -d "$TODAY_DATE" +%s) -gt $(date -d "$EXPIRATION_DATE" +%s) ]]; then
+        if [[ $(date -d "$TODAY_DATE" +%s) -gt $(date -d "$EXTENSION_DATE" +%s) ]]; then
+            echo -e "${RED}The script has expired and cannot be used after $EXTENSION_DATE.${NOCOLOR}"
+            exit 1
+        else
+            echo -e "${YELLOW}The script has expired, but you can extend its use for one more day by entering the password.${NOCOLOR}"
+
+            # Prompt for password
+            read -sp "Enter password to extend script use: " input_password
+            echo
+
+            if [[ "$input_password" != "$PASSWORD" ]]; then
+                echo -e "${RED}Incorrect password. Exiting.${NOCOLOR}"
+                exit 1
+            fi
+        fi
+    fi
+}
+
+# Call the function to check installation ID
+check_installation_id
+
+# Call the function to check expiration
+check_expiration
+
+# Output directories
+OUTPUT_DIR="/storage/emulated/0/PUBGPASTER/output"
+INPUT_DIR="/storage/emulated/0/PUBGPASTER/INPUT"
+TEMP_OUTPUT_DIR="/storage/emulated/0/PUBGPASTER/ADD_MODDED_FILES"
+
+# Ensure directories exist
+for DIR in "$OUTPUT_DIR" "$INPUT_DIR" "$TEMP_OUTPUT_DIR"; do
+    [[ ! -d "$DIR" ]] && mkdir -p "$DIR"
+done
+
+# Unpacking function
+unpacking () {
+    if qemu-i386 $PREFIX/share/quickbms/quickbms -9 -Q etc/tools.bms "$opt" "$OUTPUT_DIR"; then
+        echo -e "${GREEN}Unpacking successful!${NOCOLOR}"
+    else
+        echo -e "${RED}Unpacking failed!${NOCOLOR}"
+    fi
+}
+
+# Repacking function
+repacking () {
+    if qemu-i386 $PREFIX/share/quickbms/quickbms -9 -w -r -r etc/tools.bms "$opt" "$TEMP_OUTPUT_DIR"; then
+        echo -e "${GREEN}Repacking successful!${NOCOLOR}"
+    else
+        echo -e "${RED}Repacking failed!${NOCOLOR}"
+    fi
+}
+
+# Unpack Menu
+unpack() {
+    prompt="Please select a file to unpack:"
+    options=( $(find "$INPUT_DIR" -name "*.pak") )
+
+    echo -e "${BLUE}-----------------------------------------------${NOCOLOR}"
+    echo -e "${PINK}# ${prompt}${NOCOLOR}"
+    echo -e "${BLUE}-----------------------------------------------${LIGHTGREEN}"
+
+    options+=("Back to Menu")
+
+    PS3=$(echo -e "${PINK}Select a file:${LIGHTGREEN} ")
+    select opt in "${options[@]}"; do 
+        if [[ "$opt" == "Back to Menu" ]]; then
+            echo -e "${RED}Returning to main menu...${NOCOLOR}"
+            main_menu
+            break
+        elif [[ " ${options[@]} " =~ " ${opt} " ]]; then
+            echo -e "${ORANGE}You picked $opt.${NOCOLOR}"
+            unpacking
+            break
+        else
+            echo -e "${RED}Invalid option. Try another one.${NOCOLOR}"
+        fi
+    done
+}
+
+# Repack Menu
+repack() {
+    prompt="Please select a file to repack:"
+    options=( $(find "$INPUT_DIR" -name "*.pak") )
+
+    echo -e "${BLUE}-----------------------------------------------${NOCOLOR}"
+    echo -e "${PINK}# ${prompt}${NOCOLOR}"
+    echo -e "${BLUE}-----------------------------------------------${YELLOW}"
+
+    options+=("Back to Menu")
+
+    PS3=$(echo -e "${PINK}Select a file:${YELLOW} ")
+    select opt in "${options[@]}"; do 
+        if [[ "$opt" == "Back to Menu" ]]; then
+            echo -e "${RED}Returning to main menu...${NOCOLOR}"
+            main_menu
+            break
+        elif [[ " ${options[@]} " =~ " ${opt} " ]]; then
+            echo -e "${ORANGE}You picked $opt.${NOCOLOR}"
+            repacking
+            break
+        else
+            echo -e "${RED}Invalid option. Try another one.${NOCOLOR}"
+        fi
+    done
+}
+
+# Main Menu Function
+main_menu() {
+    echo -e "${BLUE}--------------------------------------------${NOCOLOR}" 
+    echo -e "${PINK}# Please enter your choice:${NOCOLOR}" 
+    echo -e "${BLUE}--------------------------------------------${NOCOLOR}" 
+    echo -e "${GREEN}# 1. Unpack${NOCOLOR}" 
+    echo -e "${YELLOW}# 2. Repack${NOCOLOR}" 
+    echo -e "${RED}# 3. Quit${NOCOLOR}" 
+    echo -e "${BLUE}--------------------------------------------${RED}" 
+    read -p "Enter your choice [1-3]: " choice
+
+    case $choice in
+        1)
+            unpack
+            ;;
+        2)
+            repack
+            ;;
+        3)
+            echo -e "${GREEN}Exiting...${NOCOLOR}"
+            exit 0
+            ;;
+        *)
+            echo -e "${PINK}Invalid choice. Please enter a number between 1 and 3.${NOCOLOR}"
+            ;;
+    esac
+}
+
+# Call the main menu
+main_menu
