@@ -11,8 +11,9 @@ This PAKtool is created to modify the PUBG Mobile PAK file.
 ```
 
 termux-setup-storage
-pkg update
-pkg upgrade
+
+pkg update && pkg upgrade
+
 pkg install git
 
 ```
@@ -34,14 +35,9 @@ bash setup
 6. Done.
 
 ##:USAGE:
+type in termux following commands 
+cd Pubg-paster
+bash thepak
 
-#:Unpacking
-1. Run `bash thepak`
-2. Select option 1
-3. Select your pak file
+  
 
-
-#.Repacking
-1. Run `bash thepak`
-2. Select option 2
-3. Select your pak file
