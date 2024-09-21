@@ -36,7 +36,9 @@ bash setup
 
 ##:USAGE:
 type in termux following commands 
+
 cd Pubg-paster
+
 bash thepak
 
   
