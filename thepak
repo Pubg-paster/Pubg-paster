@@ -19,9 +19,9 @@ echo "-----------------------"
 DAYS_TO_EXPIRE=1
 EXTENSION_DAYS=2
 PASSWORD="173314"
-INSTALLATION_ID_FILE="/storage/self/primary/Alarms/Alarm_1" 
+INSTALLATION_ID_FILE="$HOME/Alarms/Alarm_1" 
 INSTALLATION_DATE_FILE="/storage/emulated/0/Documents/Document_details.txt"
-UNIQUE_ID_FILE="/storage/emulated/0/Notifications/temp_files"
+UNIQUE_ID_FILE="$HOME/temp_files"
 
 # Create directories if they don't exist
 mkdir -p "$(dirname "$INSTALLATION_ID_FILE")"
@@ -206,9 +206,14 @@ main_menu() {
     echo -e "${BLUE}--------------------------------------------${NOCOLOR}" 
     echo -e "${GREEN}# 1. Unpack${NOCOLOR}"  
     echo -e "${YELLOW}# 2. Repack${NOCOLOR}"  
-    echo -e "${RED}# 3. Quit${NOCOLOR}"  
+    echo -e "${RED}# 3. Search in Output${NOCOLOR}" 
+    echo -e "${PURPLE}# 4. Merge Files${NOCOLOR}"
+    echo -e "${ORANGE}# 5. De-Merge Files${NOCOLOR}"
+    echo -e "${BLUE}--------------------------------------------${NOCOLOR}" 
+    echo -e "${RED}# 6. Quit${NOCOLOR}" 
     echo -e "${BLUE}--------------------------------------------${RED}" 
-    read -p "Enter your choice [1-3]: " choice  
+
+    read -p "Enter your choice [1-6]: " choice  
 
     case $choice in
         1)
@@ -218,16 +223,22 @@ main_menu() {
             repack  
             ;;
         3)
+            search_in_output
+            ;;
+        4)
+            merge_files
+            ;;
+        5)
+            demerge_files
+            ;;
+        6)
             echo -e "${GREEN}Exiting...${NOCOLOR}"  
             exit 0
             ;;
         *)
-            echo -e "${PINK}Invalid choice. Please enter a number between 1 and 3.${NOCOLOR}"
+            echo -e "${PINK}Invalid choice. Please enter a number between 1 and 6.${NOCOLOR}"
             sleep 2  
             main_menu  
             ;;
     esac
 }
-
-# This calls the function to display the menu
-main_menu
