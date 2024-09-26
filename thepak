@@ -223,15 +223,6 @@ main_menu() {
             repack  
             ;;
         3)
-            search_in_output
-            ;;
-        4)
-            merge_files
-            ;;
-        5)
-            demerge_files
-            ;;
-        6)
             echo -e "${GREEN}Exiting...${NOCOLOR}"  
             exit 0
             ;;
