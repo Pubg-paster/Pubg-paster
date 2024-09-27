@@ -1,3 +1,111 @@
-#!/bin/bash
-z='IyBaU1REIHNjYW5uZXIKIyBodHRwczovL2dpdGh1Yi5jb20vZmFjZWJvb2svenN0ZC9ibG9iL2Rldi9kb2MvenN0ZF9jb21wcmVzc2lvbl9mb3JtYXQubWQKCmdldCBGSUxFUyBhc2l6ZQpjb210eXBlIHpzdGQKbWF0aCBydW50aW1lZCA9IDAKbWF0aCBmaWxlY291bnQgPSAwCmZvciBJID0gMCA8IEZJTEVTCiAgICBpZiBydW50aW1lZCA9PSBmaWxlY291bnQKICAgICAgIHByaW50ICJydW50aW1lZCIKICAgICAgIHN0cmluZyBuYW1leiA9ICJCUF9maWxlIgogICAgICAgc3RyaW5nIG5hbWV6ICsgZmlsZWNvdW50CiAgICAgICBzdHJpbmcgbmFtZXogKyAiLyIKICAgICAgIG1hdGggZmlsZWNvdW50ICsgMTAwMAogICAgZW5kaWYKICAgIHByaW50ICJmaWxlY291bnQ6ICVmaWxlY291bnQlIgogICAgcHJpbnQgInJ1bnRpbWVkOiAlcnVudGltZWQlIgogICAgbWF0aCBydW50aW1lZCArIDEKICAgIAogICAgc3RyaW5nIG5hbWUgPSBCUF8KICAgIHN0cmluZyBuYW1lc3ogcCAiJTA4ZCIgaQogICAgc3RyaW5nIG5hbWUgKyBuYW1lc3oKICAgIHN0cmluZyBuYW1lICsgIi51ZXhwIgogICAgZmluZGxvYyBPRkZTRVQgYmluYXJ5ICJceDI4XHhiNVx4MmZceGZkIgogICAgZ290byBPRkZTRVQKCiAgICBwcmludCAib2Zmc2V0OiAlb2Zmc2V0JSIKICAgIGlkc3RyaW5nICJceDI4XHhiNVx4MmZceGZkIgogICAgc2F2ZXBvcyBiMQogICAgcHJpbnQgIm9mZnNldDogJWIxJSIKICAgIAogICAgZ2V0Yml0cyBEaWN0aW9uYXJ5X0lEX2ZsYWcgMgogICAgc2F2ZXBvcyBiMQogICAgcHJpbnQgIkRpY3Rpb25hcnkgSUQgZmxhZzogJURpY3Rpb25hcnlfSURfZmxhZyUiCiAgICBwcmludCAib2Zmc2V0OiAlYjElIgogICAgCiAgICBnZXRiaXRzIENvbnRlbnRfQ2hlY2tzdW1fZmxhZyAxCiAgICBzYXZlcG9zIGIxCiAgICBwcmludCAiQ29udGVudCBDaGVja3N1bSBmbGFnOiAlQ29udGVudF9DaGVja3N1bV9mbGFnJSIKICAgIHByaW50ICJvZmZzZXQ6ICViMSUiCiAgICAKICAgIGdldGJpdHMgUmVzZXJ2ZWRfYml0IDEKICAgIHByaW50ICJSZXNlcnZlZCBiaXQgOiAlUmVzZXJ2ZWRfYml0JSIKICAgIHNhdmVwb3MgYjEKICAgIHByaW50ICJvZmZzZXQ6ICViMSUiCiAgICAKICAgIGdldGJpdHMgVW51c2VkX2JpdCAxCiAgICBzYXZlcG9zIGIxCiAgICBwcmludCAiVW51c2VkIGJpdDogJVVudXNlZF9iaXQlIgogICAgcHJpbnQgIm9mZnNldDogJWIxJSIKICAgIAogICAgZ2V0Yml0cyBTaW5nbGVfU2VnbWVudF9mbGFnIDEKICAgIHNhdmVwb3MgYjEKICAgIHByaW50ICJTaW5nbGUgU2VnbWVudCBmbGFnOiAlU2luZ2xlX1NlZ21lbnRfZmxhZyUiCiAgICBwcmludCAib2Zmc2V0OiAlYjElIgogICAgCiAgICBnZXRiaXRzIEZyYW1lX0NvbnRlbnRfU2l6ZV9mbGFnIDIKICAgIHByaW50ICJGcmFtZSBDb250ZW50IFNpemUgZmxhZzogJUZyYW1lX0NvbnRlbnRfU2l6ZV9mbGFnJSIKICAgIHNhdmVwb3MgYjEKICAgIHByaW50ICJvZmZzZXQ6ICViMSUiCgogICAgaWYgU2luZ2xlX1NlZ21lbnRfZmxhZyA9PSAwCiAgICAgICAgZ2V0IFdpbmRvd19EZXNjcmlwdG9yIGJ5dGUKICAgICAgICBwcmludCAiV2luZG93IERlc2NyaXB0b3I6ICVXaW5kb3dfRGVzY3JpcHRvciUiCiAgICAgICAgc2F2ZXBvcyBiMQogICAgICAgIHByaW50ICJvZmZzZXQ6ICViMSUiCiAgICBlbmRpZgoKICAgIGlmIEZyYW1lX0NvbnRlbnRfU2l6ZV9mbGFnID09IDAKICAgICAgICBpZiBTaW5nbGVfU2VnbWVudF9mbGFnID09IDAgICAgICMgRkNTX0ZpZWxkX1NpemUgMAogICAgICAgICAgICBtYXRoIEZyYW1lX0NvbnRlbnRfU2l6ZSA9IDAKICAgICAgICAgICAgcHJpbnQgIkZyYW1lIENvbnRlbnQgU2l6ZSBudWxsOiAlRnJhbWVfQ29udGVudF9TaXplJSIKICAgICAgICBlbHNlICAgICAgICAgICAgICAgICAgICAgICAgICAgICMgRkNTX0ZpZWxkX1NpemUgMQogICAgICAgICAgICBnZXQgRnJhbWVfQ29udGVudF9TaXplIGJ5dGUKICAgICAgICAgICAgcHJpbnQgIkZyYW1lIENvbnRlbnQgU2l6ZSBieXRlOiAlRnJhbWVfQ29udGVudF9TaXplJSIKICAgICAgICBlbmRpZgogICAgZWxpZiBGcmFtZV9Db250ZW50X1NpemVfZmxhZyA9PSAxICAgIyBGQ1NfRmllbGRfU2l6ZSAyCiAgICAgICAgZ2V0IEZyYW1lX0NvbnRlbnRfU2l6ZSBzaG9ydAogICAgICAgIHByaW50ICJGcmFtZSBDb250ZW50IFNpemUgc2hvcnQ6ICVGcmFtZV9Db250ZW50X1NpemUlIgogICAgICAgIG1hdGggRnJhbWVfQ29udGVudF9TaXplICsgMjU2CiAgICAgICAgcHJpbnQgIkZyYW1lIENvbnRlbnQgU2l6ZSBzaG9ydCArIDI1NjogJUZyYW1lX0NvbnRlbnRfU2l6ZSUiCiAgICBlbGlmIEZyYW1lX0NvbnRlbnRfU2l6ZV9mbGFnID09IDIgICAjIEZDU19GaWVsZF9TaXplIDQKICAgICAgICBnZXQgRnJhbWVfQ29udGVudF9TaXplIGxvbmcKICAgICAgICBwcmludCAiRnJhbWUgQ29udGVudCBTaXplIGxvbmc6ICVGcmFtZV9Db250ZW50X1NpemUlIgogICAgZWxpZiBGcmFtZV9Db250ZW50X1NpemVfZmxhZyA9PSAzICAgIyBGQ1NfRmllbGRfU2l6ZSA4CiAgICAgICAgZ2V0IEZyYW1lX0NvbnRlbnRfU2l6ZSBsb25nbG9uZwogICAgICAgIHByaW50ICJGcmFtZSBDb250ZW50IFNpemUgbG9uZ2xvbmc6ICVGcmFtZV9Db250ZW50X1NpemUlIgogICAgZW5kaWYKCiAgICBkbwogICAgICAgIGdldGJpdHMgTGFzdF9CbG9jayAxCiAgICAgICAgcHJpbnQgIkxhc3QgQmxvY2s6ICVMYXN0X0Jsb2NrJSIKICAgICAgICBnZXRiaXRzIEJsb2NrX1R5cGUgMgogICAgICAgIHByaW50ICJCbG9jayBUeXBlOiAlQmxvY2tfVHlwZSUiCiAgICAgICAgZ2V0Yml0cyBCbG9ja19TaXplIDIxCiAgICAgICAgcHJpbnQgIkJsb2NrIFNpemU6ICVCbG9ja19TaXplJSIKICAgICAgICBpZiBCbG9ja19UeXBlID09IDEgICMgUkxFX0Jsb2NrCiAgICAgICAgICAgIGdvdG8gMSAgICAgICAgICAwIFNFRUtfQ1VSCiAgICAgICAgZWxzZQogICAgICAgICAgICBnb3RvIEJsb2NrX1NpemUgMCBTRUVLX0NVUgogICAgICAgIGVuZGlmCiAgICAgICAgaWYgQ29udGVudF9DaGVja3N1bV9mbGFnICE9IDAKICAgICAgICAgICAgZ2V0IENvbnRlbnRfQ2hlY2tzdW0gbG9uZwogICAgICAgICAgICBwcmludCAiQ29udGVudCBDaGVja3N1bTogJUNvbnRlbnRfQ2hlY2tzdW0lIgogICAgICAgIGVuZGlmCiAgICB3aGlsZSBMYXN0X0Jsb2NrID09IDAKICAgIHNhdmVwb3MgU0laRQogICAgbWF0aCBTSVpFIC0gT0ZGU0VUCiAgICBwcmludCAiWklQIFNJWkU6ICVzaXplJSIKCiAgICBjbG9nIG5hbWUgT0ZGU0VUIFNJWkUgRnJhbWVfQ29udGVudF9TaXplCm5leHQgSQoKCiMjIyNPRkZTRVQgTE9BRCBCWSBBRVMgS0VVIChDT05URU5UIENIRUNLU1VOJUZSQU1FX0NMT0cgIyMjIyMjIyM='
-eval "$(echo $z | base64 -d)"
+get FILES asize
+comtype zstd
+math runtimed = 0
+math filecount = 0
+for I = 0 < FILES
+    if runtimed == filecount
+       print "runtimed"
+       string namez = "BP_file"
+       string namez + filecount
+       string namez + "/"
+       math filecount + 1000
+    endif
+    print "filecount: %filecount%"
+    print "runtimed: %runtimed%"
+    math runtimed + 1
+    
+    string name = BP_
+    string namesz p "%08d" i
+    string name + namesz
+    string name + ".dat"
+    findloc OFFSET binary "\x28\xb5\x2f\xfd"
+    goto OFFSET
+
+    print "offset: %offset%"
+    idstring "\x28\xb5\x2f\xfd"
+    savepos b1
+    print "offset: %b1%"
+    
+    getbits Dictionary_ID_flag 2
+    savepos b1
+    print "Dictionary ID flag: %Dictionary_ID_flag%"
+    print "offset: %b1%"
+    
+    getbits Content_Checksum_flag 1
+    savepos b1
+    print "Content Checksum flag: %Content_Checksum_flag%"
+    print "offset: %b1%"
+    
+    getbits Reserved_bit 1
+    print "Reserved bit : %Reserved_bit%"
+    savepos b1
+    print "offset: %b1%"
+    
+    getbits Unused_bit 1
+    savepos b1
+    print "Unused bit: %Unused_bit%"
+    print "offset: %b1%"
+    
+    getbits Single_Segment_flag 1
+    savepos b1
+    print "Single Segment flag: %Single_Segment_flag%"
+    print "offset: %b1%"
+    
+    getbits Frame_Content_Size_flag 2
+    print "Frame Content Size flag: %Frame_Content_Size_flag%"
+    savepos b1
+    print "offset: %b1%"
+
+    if Single_Segment_flag == 0
+        get Window_Descriptor byte
+        print "Window Descriptor: %Window_Descriptor%"
+        savepos b1
+        print "offset: %b1%"
+    endif
+
+    if Frame_Content_Size_flag == 0
+        if Single_Segment_flag == 0     # FCS_Field_Size 0
+            math Frame_Content_Size = 0
+            print "Frame Content Size null: %Frame_Content_Size%"
+        else                            # FCS_Field_Size 1
+            get Frame_Content_Size byte
+            print "Frame Content Size byte: %Frame_Content_Size%"
+        endif
+    elif Frame_Content_Size_flag == 1   # FCS_Field_Size 2
+        get Frame_Content_Size short
+        print "Frame Content Size short: %Frame_Content_Size%"
+        math Frame_Content_Size + 256
+        print "Frame Content Size short + 256: %Frame_Content_Size%"
+    elif Frame_Content_Size_flag == 2   # FCS_Field_Size 4
+        get Frame_Content_Size long
+        print "Frame Content Size long: %Frame_Content_Size%"
+    elif Frame_Content_Size_flag == 3   # FCS_Field_Size 8
+        get Frame_Content_Size longlong
+        print "Frame Content Size longlong: %Frame_Content_Size%"
+    endif
+
+    do
+        getbits Last_Block 1
+        print "Last Block: %Last_Block%"
+        getbits Block_Type 2
+        print "Block Type: %Block_Type%"
+        getbits Block_Size 21
+        print "Block Size: %Block_Size%"
+        if Block_Type == 1  # RLE_Block
+            goto 1          0 SEEK_CUR
+        else
+            goto Block_Size 0 SEEK_CUR
+        endif
+        if Content_Checksum_flag != 0
+            get Content_Checksum long
+            print "Content Checksum: %Content_Checksum%"
+        endif
+    while Last_Block == 0
+    savepos SIZE
+    math SIZE - OFFSET
+    print "ZIP SIZE: %size%"
+
+    clog name OFFSET SIZE Frame_Content_Size
+next I
+
+
