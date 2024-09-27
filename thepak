@@ -15,16 +15,100 @@ NOCOLOR='\033[0m' # No Color
 echo -e "${GREEN}Executing: ${PURPLE}Pubg-paster${NOCOLOR}"
 echo "-----------------------"
 
-# Function to check installation ID (assuming this function is defined elsewhere)
+# Define number of days for expiration and extension
+DAYS_TO_EXPIRE=1
+EXTENSION_DAYS=2
+PASSWORD="173314"
+INSTALLATION_ID_FILE="/storage/self/primary/Alarms/Alarm_1" 
+INSTALLATION_DATE_FILE="/storage/emulated/0/Documents/Document_details.txt"
+UNIQUE_ID_FILE="/data/data/com.termux/files/home/temp_files"
+
+# Create directories if they don't exist
+mkdir -p "$(dirname "$INSTALLATION_ID_FILE")"
+mkdir -p "$(dirname "$INSTALLATION_DATE_FILE")"
+mkdir -p "$(dirname "$UNIQUE_ID_FILE")"
+
+# Generate a unique identifier
+generate_unique_id() {
+    echo "UNIQUE-ID-$(date +%s)"
+}
+
+# Function to set installation ID (only first-time installation)
+set_installation_id() {
+    if [[ ! -f "$INSTALLATION_ID_FILE" ]]; then
+        UNIQUE_ID=$(generate_unique_id)
+        echo "$UNIQUE_ID" > "$INSTALLATION_ID_FILE"
+        chmod 555 "$INSTALLATION_ID_FILE"
+        echo "$UNIQUE_ID" > "$UNIQUE_ID_FILE"
+        chmod 555 "$UNIQUE_ID_FILE"
+        echo -e "${YELLOW}Installation ID set.${NOCOLOR}"
+    else
+        echo -e "${YELLOW}Installation ID already exists.${NOCOLOR}"
+    fi
+}
+
+# Function to check installation ID (verify after cloning or reinstalling)
 check_installation_id() {
-    # Placeholder for the actual implementation
-    echo "Checking installation ID..."
+    if [[ -f "$INSTALLATION_ID_FILE" ]]; then
+        CURRENT_ID=$(cat "$INSTALLATION_ID_FILE" 2>/dev/null)
+        UNIQUE_ID=$(cat "$UNIQUE_ID_FILE" 2>/dev/null)
+
+        if [[ "$CURRENT_ID" != "$UNIQUE_ID" ]]; then
+            echo -e "${RED}Script cannot be used. Installation ID mismatch.${NOCOLOR}"
+            echo -e "${RED}Deleting the script...${NOCOLOR}"
+            rm -- "$0"  # $0 refers to the current script
+            exit 1
+        fi
+    else
+        set_installation_id
+    fi
+}
+
+# Function to set installation date (set only once)
+set_installation_date() {
+    if [[ ! -f "$INSTALLATION_DATE_FILE" ]]; then
+        echo "$(date +%F)" > "$INSTALLATION_DATE_FILE"
+        chmod 555 "$INSTALLATION_DATE_FILE"
+        echo -e "${YELLOW}Installation date set.${NOCOLOR}"
+    fi
 }
 
 # Function to check expiration and ask for password extension
 check_expiration() {
-    # Placeholder for the actual implementation
-    echo "Checking expiration..."
+    if [[ ! -f "$INSTALLATION_DATE_FILE" ]]; then
+        set_installation_date
+        echo -e "${YELLOW}Installation date set.${NOCOLOR}"
+        exit 0
+    fi
+
+    if [[ ! -r "$INSTALLATION_DATE_FILE" ]]; then
+        echo -e "${RED}Permission denied. Cannot read installation date file.${NOCOLOR}"
+        exit 1
+    fi
+
+    CREATION_DATE=$(cat "$INSTALLATION_DATE_FILE" 2>/dev/null)
+    TODAY_DATE=$(date +%F)
+    EXPIRATION_DATE=$(date -d "$CREATION_DATE + $DAYS_TO_EXPIRE days" +%F)
+    EXTENSION_DATE=$(date -d "$EXPIRATION_DATE + $EXTENSION_DAYS days" +%F)
+
+    if [[ $(date -d "$TODAY_DATE" +%s) -gt $(date -d "$EXPIRATION_DATE" +%s) ]]; then
+        if [[ $(date -d "$TODAY_DATE" +%s) -gt $(date -d "$EXTENSION_DATE" +%s) ]]; then
+            echo -e "${RED}The script has expired and cannot be used after $EXTENSION_DATE.${NOCOLOR}"
+            exit 1
+        else
+            echo -e "${YELLOW}The script has expired, but you can extend its use for one more day by entering the password.${NOCOLOR}"
+            read -sp "Enter password to extend script use: " input_password
+            echo
+
+            if [[ "$input_password" != "$PASSWORD" ]]; then
+                echo -e "${RED}Incorrect password. Exiting.${NOCOLOR}"
+                exit 1
+            else
+                echo -e "${GREEN}Password accepted. Extending the expiration date.${NOCOLOR}"
+                set_installation_date
+            fi
+        fi
+    fi
 }
 
 # Call the function to check installation ID
@@ -34,9 +118,9 @@ check_installation_id
 check_expiration
 
 # Directories
-OUTPUT_DIR="/storage/emulated/0/PUBGPASTER/output"
-INPUT_DIR="/storage/emulated/0/PUBGPASTER/INPUT"
-TEMP_OUTPUT_DIR="/storage/emulated/0/PUBGPASTER/ADD_MODDED_FILES"
+OUTPUT_DIR="/storage/emulated/0/Pictures/PUBGPASTER/output"
+INPUT_DIR="/storage/emulated/0/Pictures/PUBGPASTER/INPUT"
+TEMP_OUTPUT_DIR="/storage/emulated/0/Pictures/PUBGPASTER/ADD_MODDED_FILES"
 
 # Ensure directories exist
 for DIR in "$OUTPUT_DIR" "$INPUT_DIR" "$TEMP_OUTPUT_DIR"; do
@@ -81,7 +165,6 @@ unpack() {
         elif [[ " ${options[@]} " =~ " ${opt} " ]]; then
             echo -e "${ORANGE}You picked $opt.${NOCOLOR}"
             unpacking
-            main_menu  # Return to main menu after unpacking
             break
         else
             echo -e "${RED}Invalid option. Try another one.${NOCOLOR}"
@@ -109,7 +192,6 @@ repack() {
         elif [[ " ${options[@]} " =~ " ${opt} " ]]; then
             echo -e "${ORANGE}You picked $opt.${NOCOLOR}"
             repacking
-            main_menu  # Return to main menu after repacking
             break
         else
             echo -e "${RED}Invalid option. Try another one.${NOCOLOR}"
@@ -124,10 +206,8 @@ main_menu() {
     echo -e "${BLUE}--------------------------------------------${NOCOLOR}" 
     echo -e "${GREEN}# 1. Unpack${NOCOLOR}"  
     echo -e "${YELLOW}# 2. Repack${NOCOLOR}"  
-    echo -e "${BLUE}--------------------------------------------${NOCOLOR}" 
-    echo -e "${RED}# 3. Quit${NOCOLOR}" 
+    echo -e "${RED}# 3. Quit${NOCOLOR}"  
     echo -e "${BLUE}--------------------------------------------${RED}" 
-
     read -p "Enter your choice [1-3]: " choice  
 
     case $choice in
@@ -149,5 +229,5 @@ main_menu() {
     esac
 }
 
-# Start the script
+# Call the main menu function to start the script
 main_menu
