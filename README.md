@@ -1,8 +1,7 @@
-no# PubgPAKTOOL
-Hi..this is my Paktool project for pubg obb
-# PUBG-PASTER 
+Telegram:https://t.me/+R9KoDxIuEQYxNmZl
 
-This PAKtool is created to modify the PUBG Mobile PAK file.
+# PUBG-PASTER 
+This PAKtool is created to modify the PUBG Mobile PAK files
 
 ## Installing
 1. Install Termux from PlayStore,
@@ -12,7 +11,11 @@ This PAKtool is created to modify the PUBG Mobile PAK file.
 
 termux-setup-storage
 
+
+
 pkg update && pkg upgrade
+
+
 
 pkg install git
 
@@ -27,7 +30,11 @@ git clone https://github.com/Pubg-paster/Pubg-paster.git
 ```
 cd Pubg-paster
 
+
+
 chmod +x setup
+
+
 
 bash setup
 
@@ -36,6 +43,9 @@ bash setup
 
 ##:USAGE:
 type in termux following commands 
+cd Pubg-paster
+
+bash thepak
 
 cd Pubg-paster
 
